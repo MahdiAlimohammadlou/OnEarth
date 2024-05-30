@@ -15,7 +15,8 @@ from .serializers import (BuyerPersonalInfoSerializer, SellerPersonalInfoSeriali
 from rest_framework.permissions import IsAuthenticated
 from core.views import InfoAPIView
 from account.models import User
-from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 
 def send_otp(to, otp):
     subject = "OnEarth Code"
@@ -38,6 +39,7 @@ class UserMeView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         return self.request.user
 
+
 class ChangePasswordView(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -46,33 +48,53 @@ class ChangePasswordView(APIView):
         serializer = ChangePasswordSerializer(data=request.data)
 
         if serializer.is_valid():
+            # Check old password
             if not user.check_password(serializer.validated_data['old_password']):
                 return Response({"old_password": ["Wrong password."]}, status=status.HTTP_400_BAD_REQUEST)
             
+            # Validate new password
+            try:
+                validate_password(serializer.validated_data['new_password'], user=user)
+            except ValidationError as e:
+                return Response({"new_password": e.messages}, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Set new password
             user.set_password(serializer.validated_data['new_password'])
             user.save()
             return Response({"detail": "Password has been changed."}, status=status.HTTP_200_OK)
         
+        # Return serializer errors if any
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 @api_view(['POST'])
 def generate_and_store_otp(request):
     '''
-    This api view will take an email generate an otp code for the email in redis for 2 minutes.
+    This API view takes an email, generates an OTP code for the email,
+    and stores it in Redis for 2 minutes.
     '''
     if request.method == 'POST':
         email = request.data.get('email')
+
+        # Check if email is provided
+        if not email:
+            return Response({'detail': 'Email field is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
         otp_code = ''.join(random.choices(string.digits, k=6))
+        
         try:
-            r = redis.Redis(host=settings.REDIS_HOST,
-                            port=settings.REDIS_PORT,
-                             db= settings.OTP_REDIS_DB,)
+            r = redis.Redis(
+                host=settings.REDIS_HOST,
+                port=settings.REDIS_PORT,
+                db=settings.OTP_REDIS_DB,
+            )
             r.setex(email, 180, otp_code)
             send_otp(email, otp_code)
-            return Response({'detail': 'otp generated successfully'}, status=status.HTTP_201_CREATED)
-        except:
-            return Response({'detail': 'otp generated failed'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'detail': 'OTP generated successfully.'}, status=status.HTTP_201_CREATED)
+        
+        except redis.exceptions.ConnectionError:
+            return Response({'detail': 'Failed to connect to Redis.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception as e:
+            return Response({'detail': f'An error occurred: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(['POST'])
@@ -88,15 +110,18 @@ def verify_otp(request):
             password = request.data.get('password')
             entered_otp = request.data.get('entered_otp')
             
+            # Check if all required fields are provided
             if not all([email, phone_number, password, entered_otp]):
                 return Response({"detail": "All fields are required."}, status=status.HTTP_400_BAD_REQUEST)
 
+            # Connect to Redis
             r = redis.Redis(
                 host=settings.REDIS_HOST,
                 port=settings.REDIS_PORT,
                 db=settings.OTP_REDIS_DB,
             )
             
+            # Retrieve OTP from Redis
             stored_otp = r.get(email)
             
             if not stored_otp:
@@ -105,6 +130,14 @@ def verify_otp(request):
             if stored_otp.decode('utf-8') != entered_otp:
                 return Response({"detail": "Invalid OTP."}, status=status.HTTP_400_BAD_REQUEST)
             
+            # Check for unique email and phone number
+            if User.objects.filter(email=email).exists():
+                return Response({"detail": "This email is already in use."}, status=status.HTTP_400_BAD_REQUEST)
+            
+            if User.objects.filter(phone_number=phone_number).exists():
+                return Response({"detail": "This phone number is already in use."}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Create user
             user = User.objects.create_user(email=email, password=password, phone_number=phone_number)
             tokens = get_tokens_for_user(user)
             
@@ -124,31 +157,35 @@ def verify_otp(request):
 
 @api_view(['GET'])
 def check_user_existence(request, email):
+    if not email:
+        return Response({'error': 'Email cannot be empty.'}, status=status.HTTP_400_BAD_REQUEST)
+    
     try:
         user = User.objects.get(email=email)
         return Response({'exists': True}, status=status.HTTP_200_OK)
     except User.DoesNotExist:
         return Response({'exists': False}, status=status.HTTP_200_OK)
-
+    except User.MultipleObjectsReturned:
+        return Response({'error': 'The entered email is not unique.'}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 def verify_and_create_tokens(request):
     if request.method == "POST":
         token = request.data.get("token")
         if not token:
-            return Response({'error': 'Token not provided'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Token not provided.'}, status=status.HTTP_400_BAD_REQUEST)
         
         url = f"https://www.googleapis.com/oauth2/v1/tokeninfo?access_token={token}"
         try:
             response = requests.get(url)
             if response.status_code != 200:
-                return Response({'error': 'Token verification failed', 'details': response.json()}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'error': 'Token verification failed.', 'details': response.json()}, status=status.HTTP_400_BAD_REQUEST)
             
             data = response.json()
             email = data.get('email')
 
             if not email:
-                return Response({'error': 'Invalid token or email not found'}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({'error': 'Invalid token or email not found.'}, status=status.HTTP_400_BAD_REQUEST)
 
             # Find user by email
             try:
@@ -156,18 +193,19 @@ def verify_and_create_tokens(request):
             except User.DoesNotExist:
                 # Create a new user if not found
                 user = User.objects.create_user(email=email, username=email, password=None)
+            except User.MultipleObjectsReturned:
+                return Response({'error': 'The entered email is not unique.'}, status=status.HTTP_400_BAD_REQUEST)
 
             user_tokens = get_tokens_for_user(user)
             return Response({'detail': 'OTP verification successful',
-                            "refresh" : user_tokens["refresh"],
-                            "access" : user_tokens["access"]
+                            "refresh": user_tokens["refresh"],
+                            "access": user_tokens["access"]
                             },
                             status=status.HTTP_200_OK)
         except requests.RequestException as e:
-            return Response({'error': 'Token verification failed', 'details': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'error': 'Token verification failed.', 'details': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except jwt.PyJWTError as e:
-            return Response({'error': 'Token creation failed', 'details': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
+            return Response({'error': 'Token creation failed.', 'details': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 class BuyerPersonalInfoAPIView(InfoAPIView):
     serializer_class = BuyerPersonalInfoSerializer
     model_class = BuyerPersonalInfo
