@@ -29,7 +29,6 @@ class City(AbstractBaseModel):
             return min(property.effective_price for property in properties)
         return None
         
-
     @property
     def max_price(self):
         properties = Property.objects.filter(project__city=self)
@@ -44,7 +43,17 @@ class City(AbstractBaseModel):
     def __str__(self):
         return self.name
 
-    
+
+class Neighborhood(models.Model):
+    name = models.CharField(max_length=100)
+    city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='neighborhoods')
+    description = models.TextField()
+    neighborhood_img = models.ImageField(upload_to="neighborhood_images/", null=True, blank=True)
+
+    def __str__(self):
+        return self.name
+
+
 class Facility(AbstractBaseModel):
     name = models.CharField(max_length=100)
     facility_icon = models.ImageField(upload_to="facility_icons/", null = True, blank = True) 
@@ -55,6 +64,7 @@ class Facility(AbstractBaseModel):
 class Project(AbstractBaseModel):
     title = models.CharField(max_length=100)
     city = models.ForeignKey('City', related_name = "projects", on_delete=models.CASCADE)
+    neighborhood = models.ForeignKey(Neighborhood, related_name="projects", on_delete=models.CASCADE, null=True, blank=True)
     description = models.TextField()
     average_rating = models.DecimalField(max_digits=2, decimal_places=1, default=5.0, validators=[MinValueValidator(0), MaxValueValidator(5)])
     address = models.CharField(max_length=255)
