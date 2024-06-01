@@ -201,7 +201,6 @@ class ProjectSerializer(BaseSerializer):
 
     def get_max_price(self, obj):
         return obj.max_price
-    
 
 
 class CitySerializer(BaseSerializer):
