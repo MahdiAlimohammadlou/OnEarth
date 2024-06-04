@@ -207,6 +207,25 @@ def sign_up_verify_otp(request):
             return Response({"detail": "An error occurred: " + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+def refresh_jwt(refresh_token):
+    try:
+        refresh = RefreshToken(refresh_token)
+        new_access_token = refresh.access_token
+        return Response({
+            'access': str(new_access_token),
+        })
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+def verify_jwt(token):
+    try:
+        serializer = TokenVerifySerializer(data={'token': token})
+        serializer.is_valid(raise_exception=True)
+        return Response({"message": "Token is valid"}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['GET'])
 def check_user_existence(request, email):
     if not email:
@@ -258,6 +277,8 @@ def verify_and_create_tokens(request):
             return Response({'error': 'Token verification failed.', 'details': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except jwt.PyJWTError as e:
             return Response({'error': 'Token creation failed.', 'details': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
 class BuyerPersonalInfoAPIView(InfoAPIView):
     serializer_class = BuyerPersonalInfoSerializer
     model_class = BuyerPersonalInfo
