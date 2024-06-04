@@ -4,8 +4,8 @@ from django.db.models import Count
 from django.db.models import Q
 
 class PropertyFilter(filters.FilterSet):
-    country = filters.CharFilter(field_name='project__city__country__name', lookup_expr='iexact')
-    city = filters.CharFilter(field_name='project__city__name', lookup_expr='iexact')
+    country = filters.CharFilter(field_name='project__neighborhood__city__country__name', lookup_expr='iexact')
+    city = filters.CharFilter(field_name='project__neighborhood__city__name', lookup_expr='iexact')
     min_price = filters.NumberFilter(field_name='price_per_nft', lookup_expr='gte')
     max_price = filters.NumberFilter(field_name='price_per_nft', lookup_expr='lte')
     min_area = filters.NumberFilter(field_name='area', lookup_expr='gte')
@@ -32,8 +32,9 @@ class PropertyFilter(filters.FilterSet):
         
     def filter_search(self, queryset, name, value):
         return queryset.filter(
-            Q(project__city__country__name__icontains=value) |
-            Q(project__city__name__icontains=value) |
+            Q(project__neighborhood__city__country__name__icontains=value) |
+            Q(project__neighborhood__city__name__icontains=value) |
+            Q(project__neighborhood__name__icontains=value) |
             Q(project__title__icontains=value) |
             Q(name__icontains=value)
         )

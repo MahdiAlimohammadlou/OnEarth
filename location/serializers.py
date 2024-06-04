@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from .models import (Country, City, Project, ProjectImage, Facility,
                       Property, PropertyImage, Banner, Category,
-                      ProjectVideo, PropertyVideo, PropertyLike
+                      ProjectVideo, PropertyVideo, PropertyLike,
+                      Neighborhood
                       )
 from core.serializers import BaseSerializer
 from financial.models import ShippingInfo, NFT
@@ -151,7 +152,7 @@ class ProjectSerializer(BaseSerializer):
     
     class Meta:
         model = Project
-        fields = ['id', 'title', 'city', 'description',
+        fields = ['id', 'title', 'neighborhood', 'description',
                    'average_rating', 'address', 'property_count',
                     'min_bedrooms', 'max_bedrooms', 'min_area',
                     'max_area', 'cover_img', 'cover_img_full_url', 'slug',
@@ -201,6 +202,21 @@ class ProjectSerializer(BaseSerializer):
 
     def get_max_price(self, obj):
         return obj.max_price
+
+
+class NeighborhoodSerializer(BaseSerializer):
+    full_neighborhood_img_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Neighborhood
+        fields = [
+         "name", "city", "description", "neighborhood_img",
+         "full_neighborhood_img_url"
+        ]
+
+    def get_full_neighborhood_img_url(self, obj):
+        return get_full_url(obj, "neighborhood_img", self.url)
+
 
 
 class CitySerializer(BaseSerializer):
