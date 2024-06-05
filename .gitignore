@@ -1,2 +1,75 @@
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+.venv/
+
+# Environment configuration files
 .env
-.venv
+
+# Build directories
+build/
+dist/
+*.egg-info/
+*.eggs/
+pip-wheel-metadata/
+
+# PyInstaller
+# Usually contains binary and resource files
+pyinstaller/
+
+# Python cache files
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# Log files
+*.log
+
+# Database files
+#*.sqlite3
+
+# Editor and IDE files
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Jupyter Notebook files
+.ipynb_checkpoints/
+
+# Test files
+.coverage
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+.tox/
+.nox/
+
+# Docker files
+docker-compose.yml
+docker-compose.override.yml
+
+# Ignored by Git itself
+.git/
+.gitignore
+
+# Documentation builds
+docs/_build/
+
+# MyPy profiles
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Distribution packages
+*.tar.gz
+*.zip
+*.whl
