@@ -1,9 +1,10 @@
 from core.views import LocationBaseModelViewSet
-from .models import Country, City, Project, Property, Banner, Category, PropertyLike
+from .models import Country, City, Project, Property, Banner, Category, PropertyLike, Neighborhood
 from .serializers import (
     CountrySerializer, CitySerializer,
     ProjectSerializer, PropertySerializer,
-    BannerSerializer, CategorySerializer)
+    BannerSerializer, CategorySerializer,
+    NeighborhoodSerializer)
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status, permissions
@@ -31,15 +32,29 @@ class CityViewSet(LocationBaseModelViewSet):
         else:
             return super().list(request, *args, **kwargs)
 
-class ProjectViewSet(LocationBaseModelViewSet):
-    model = Project
-    serializer_class = ProjectSerializer
+class NeighborhoodViewSet(LocationBaseModelViewSet):
+    model = Neighborhood
+    serializer_class = NeighborhoodSerializer
 
     def list(self, request, *args, **kwargs):
         city_id = request.GET.get("city_id", None)
         if city_id is not None:
             url = get_current_url(request)
-            queryset = Project.objects.filter(city=city_id)
+            queryset = Neighborhood.objects.filter(city=city_id)
+            serializer = NeighborhoodSerializer(instance=queryset, many=True, context={'url' : url})
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return super().list(request, *args, **kwargs)
+
+class ProjectViewSet(LocationBaseModelViewSet):
+    model = Project
+    serializer_class = ProjectSerializer
+
+    def list(self, request, *args, **kwargs):
+        neighborhood_id = request.GET.get("neighborhood_id", None)
+        if neighborhood_id is not None:
+            url = get_current_url(request)
+            queryset = Project.objects.filter(neighborhood=neighborhood_id)
             serializer = ProjectSerializer(instance=queryset, many=True, context={'url' : url})
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:

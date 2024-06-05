@@ -63,7 +63,6 @@ class Facility(AbstractBaseModel):
 
 class Project(AbstractBaseModel):
     title = models.CharField(max_length=100)
-    city = models.ForeignKey('City', related_name = "projects", on_delete=models.CASCADE)
     neighborhood = models.ForeignKey(Neighborhood, related_name="projects", on_delete=models.CASCADE, null=True, blank=True)
     description = models.TextField()
     average_rating = models.DecimalField(max_digits=2, decimal_places=1, default=5.0, validators=[MinValueValidator(0), MaxValueValidator(5)])
@@ -115,8 +114,7 @@ class Project(AbstractBaseModel):
     
     @property
     def country(self):
-        return self.city.country.name
-
+        return self.neighborhood.city.country.name
 
     def __str__(self):
         return self.title
@@ -184,11 +182,11 @@ class Property(AbstractBaseModel):
 
     @property
     def country(self):
-        return self.project.city.country.name
+        return self.project.neighborhood.city.country.name
 
     @property
     def city(self):
-        return self.project.city.name
+        return self.project.neighborhood.city.name
 
     def __str__(self):
         return self.name

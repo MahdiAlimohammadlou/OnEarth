@@ -88,7 +88,7 @@ def generate_and_store_otp(request):
                 db=settings.OTP_REDIS_DB,
             )
             r.setex(email, 180, otp_code)
-            send_otp(email, otp_code)
+            # send_otp(email, otp_code)
             return Response({'detail': 'OTP generated successfully.'}, status=status.HTTP_201_CREATED)
         
         except redis.exceptions.ConnectionError:
@@ -98,7 +98,59 @@ def generate_and_store_otp(request):
 
 
 @api_view(['POST'])
-def verify_otp(request):
+def sign_in_verify_otp(request):
+    '''
+    This api view will take (email, otp, password) and verify the otp.
+    Finally, if verification is successful, the user will be signed in.
+    '''
+    if request.method == 'POST':
+        try:
+            email = request.data.get('email')
+            password = request.data.get('password')
+            entered_otp = request.data.get('entered_otp')
+            
+            # Check if all required fields are provided
+            if not all([email, password, entered_otp]):
+                return Response({"detail": "All fields are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Connect to Redis
+            r = redis.Redis(
+                host=settings.REDIS_HOST,
+                port=settings.REDIS_PORT,
+                db=settings.OTP_REDIS_DB,
+            )
+            
+            # Retrieve OTP from Redis
+            stored_otp = r.get(email)
+            
+            if not stored_otp:
+                return Response({"detail": "OTP not found or expired."}, status=status.HTTP_400_BAD_REQUEST)
+            
+            if stored_otp.decode('utf-8') != entered_otp:
+                return Response({"detail": "Invalid OTP."}, status=status.HTTP_400_BAD_REQUEST)
+            
+            try:
+                # Check user exsistance
+                user = User.objects.get(email=email)
+                if not user.check_password(password):
+                    return Response({"error": "Invalid Password"}, status=status.HTTP_401_UNAUTHORIZED)
+                
+                # Generate token for user
+                refresh = RefreshToken.for_user(user)
+                return Response({
+                    'access': str(refresh.access_token),
+                    'refresh': str(refresh),
+                })
+            except User.DoesNotExist:
+                return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+        except redis.RedisError as e:
+            return Response({"detail": "Redis error: " + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception as e:
+            return Response({"detail": "An error occurred: " + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+def sign_up_verify_otp(request):
     '''
     This api view will take (email, otp, phone number, password) and verify the otp.
     Finally, if verification is successful, the user will be signed up.
@@ -155,6 +207,25 @@ def verify_otp(request):
             return Response({"detail": "An error occurred: " + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+def refresh_jwt(refresh_token):
+    try:
+        refresh = RefreshToken(refresh_token)
+        new_access_token = refresh.access_token
+        return Response({
+            'access': str(new_access_token),
+        })
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+def verify_jwt(token):
+    try:
+        serializer = TokenVerifySerializer(data={'token': token})
+        serializer.is_valid(raise_exception=True)
+        return Response({"message": "Token is valid"}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['GET'])
 def check_user_existence(request, email):
     if not email:
@@ -206,6 +277,8 @@ def verify_and_create_tokens(request):
             return Response({'error': 'Token verification failed.', 'details': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         except jwt.PyJWTError as e:
             return Response({'error': 'Token creation failed.', 'details': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
 class BuyerPersonalInfoAPIView(InfoAPIView):
     serializer_class = BuyerPersonalInfoSerializer
     model_class = BuyerPersonalInfo

@@ -6,7 +6,8 @@ from rest_framework.response import Response
 from .views import (CountryViewSet, CityViewSet,
                      ProjectViewSet, PropertyViewSet,
                      BannerListView, CategoryListView,
-                     PropertyLikeView, UserLikesView)
+                     PropertyLikeView, UserLikesView,
+                     NeighborhoodViewSet)
 
 router = DefaultRouter()
 
@@ -14,6 +15,7 @@ router.register('countries', CountryViewSet, basename='country')
 router.register('cities', CityViewSet, basename='city')
 router.register('projects', ProjectViewSet, basename='project')
 router.register('properties', PropertyViewSet, basename='property')
+router.register('neighborhoods', NeighborhoodViewSet, basename='neighborhood')
 
 urlpatterns = [
     # API urls
@@ -25,15 +27,3 @@ urlpatterns = [
     path('like/', PropertyLikeView.as_view(), name="like"),
     path('user-likes/', UserLikesView.as_view(), name="user-like"),
 ]
-
-# for viewset in [CountryViewSet, CityViewSet, ProjectViewSet, PropertyViewSet]:
-#     basename = getattr(viewset, 'basename', None)
-#     if basename:
-#         urlpatterns.append(
-#             path(
-#                 f'{router.registry[basename].url}/search/',
-#                 viewset.as_view({'get': 'search'}),
-#                 name=f'{basename}-search'
-#             )
-#         )
-

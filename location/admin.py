@@ -1,10 +1,12 @@
 from django.contrib import admin
 from .models import (Country, City, Facility, Project,
                       ProjectImage, Property, PropertyImage,
-                      Banner, Category, ProjectVideo, PropertyVideo)
+                      Banner, Category, ProjectVideo, PropertyVideo,
+                      Neighborhood)
 
 admin.site.register(Country)
 admin.site.register(City)
+admin.site.register(Neighborhood)
 admin.site.register(Facility)
 admin.site.register(Project)
 admin.site.register(ProjectImage)
