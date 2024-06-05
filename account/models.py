@@ -52,6 +52,7 @@ class CommonFields(AbstractBaseModel):
     birth_certificate = models.ImageField(upload_to='birth_certificate_images/', null=True, unique=True)
     id_or_driver_license = models.ImageField(upload_to='id_or_driver_license_images/', null=True, unique=True)
     approval_status = models.BooleanField(default=False)
+    passport = models.ImageField(upload_to='passport_images/', null=True, unique=True)
     
     class Meta:
         abstract = True
@@ -78,7 +79,6 @@ class BuyerPersonalInfo(CommonFields):
     buyer_user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='buyer_personal_info')
 
 class SellerPersonalInfo(CommonFields):
-    passport = models.ImageField(upload_to='passport_images/', null=True, unique=True)
     seller_agreement = models.ImageField(upload_to='seller_aggrement_images/', null=True, unique=True)
     seller_user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='seller_personal_info')
 
