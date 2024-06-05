@@ -9,6 +9,23 @@ class AbstractBaseModel(models.Model):
     class Meta:
         abstract = True
 
+class AbstractBaseInfoModel(AbstractBaseModel):
+    STATUS_CHOICES = [
+        ('New', 'Pending'),
+        ('Approved', 'Approved'),
+        ('Rejected', 'Rejected'),
+    ]
+
+    passport = models.ImageField(upload_to='passport_images/', null=True, blank=True)
+    passport_approval_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='New', verbose_name='Passport approval Status')
+    biometric = models.ImageField(upload_to='biometric_images/', null=True, blank=True)
+    biometric_approval_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='New', verbose_name='biometric approval Status')
+    basic_approval_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='New', verbose_name='Basic info approval Status')
+    approval_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='New', verbose_name='َApproval Status')
+
+    class Meta:
+        abstract = True
+
 class AboutUsInfo(models.Model):
     email = models.EmailField(max_length=255)
     phone_number = models.CharField(max_length=17)

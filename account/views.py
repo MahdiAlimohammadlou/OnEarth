@@ -10,7 +10,9 @@ from django.core.mail import send_mail
 from .models import (User, Ticket, AgentInfo, BuyerPersonalInfo, SellerPersonalInfo)
 from .serializers import (BuyerPersonalInfoSerializer, SellerPersonalInfoSerializer,
                            AgentInfoSerializer, TicketSerializer, UserSerializer,
-                           ChangePasswordSerializer
+                           ChangePasswordSerializer, CreateOrUpdateAgentInfoSerializer,
+                           CreateOrUpdateSellerPersonalInfoSerializer,
+                           CreateOrUpdateBuyerPersonalInfoSerializer,
                            )
 from rest_framework.permissions import IsAuthenticated
 from core.views import InfoAPIView
@@ -286,16 +288,19 @@ def verify_and_create_tokens(request):
 class BuyerPersonalInfoAPIView(InfoAPIView):
     serializer_class = BuyerPersonalInfoSerializer
     model_class = BuyerPersonalInfo
+    create_or_update_serializer_class = CreateOrUpdateBuyerPersonalInfoSerializer
     user_field = 'buyer_user'
 
 class SellerPersonalInfoAPIView(InfoAPIView):
     serializer_class = SellerPersonalInfoSerializer
     model_class = SellerPersonalInfo
+    create_or_update_serializer_class = CreateOrUpdateSellerPersonalInfoSerializer
     user_field = 'seller_user'
 
 class AgentInfoAPIView(InfoAPIView):
     serializer_class = AgentInfoSerializer
     model_class = AgentInfo
+    create_or_update_serializer_class = CreateOrUpdateAgentInfoSerializer
     user_field = 'agent_user'
     
 class TicketListCreateView(generics.ListCreateAPIView):

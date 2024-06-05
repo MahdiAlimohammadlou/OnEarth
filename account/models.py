@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from .managers import UserManager
 from django.utils import timezone
 from datetime import timedelta
-from core.models import AbstractBaseModel
+from core.models import AbstractBaseModel, AbstractBaseInfoModel
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
@@ -42,17 +42,22 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
-class CommonFields(AbstractBaseModel):
-    biometric = models.ImageField(upload_to='biometric_images/', null=True, unique=True)
-    full_name = models.CharField(max_length=100, null=True, unique=True)
-    postal_address = models.TextField(null=True, unique=True)
-    marital_status = models.CharField(choices=[('single', 'Single'), ('married', 'Married')], max_length=20, null=True, unique=True)
+class CommonFields(AbstractBaseInfoModel):
+    STATUS_CHOICES = [
+        ('New', 'Pending'),
+        ('Approved', 'Approved'),
+        ('Rejected', 'Rejected'),
+    ]
+    full_name = models.CharField(max_length=100, null=True, blank=True)
+    postal_address = models.TextField(null=True, blank=True)
+    marital_status = models.CharField(choices=[('single', 'Single'), ('married', 'Married')], max_length=20, null=True, blank=True)
     marriage_contract = models.ImageField(blank=True, null=True, upload_to='marriage_contract_images/')
-    elec_bill = models.ImageField(upload_to='elec_bill_images/', null=True, unique=True)
-    birth_certificate = models.ImageField(upload_to='birth_certificate_images/', null=True, unique=True)
-    id_or_driver_license = models.ImageField(upload_to='id_or_driver_license_images/', null=True, unique=True)
-    approval_status = models.BooleanField(default=False)
-    passport = models.ImageField(upload_to='passport_images/', null=True, unique=True)
+    elec_bill = models.ImageField(upload_to='elec_bill_images/', null=True, blank=True)
+    elec_bill_approval_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='New', verbose_name='Elec bill approval Status')
+    birth_certificate = models.ImageField(upload_to='birth_certificate_images/', null=True, blank=True)
+    birth_certificate_approval_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='New', verbose_name='Birth certificate approval Status')
+    id_or_driver_license = models.ImageField(upload_to='id_or_driver_license_images/', null=True, blank=True)
+    id_or_driver_license_approval_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='New', verbose_name='ID or driver license approval Status')
     
     class Meta:
         abstract = True
@@ -60,26 +65,31 @@ class CommonFields(AbstractBaseModel):
     def __str__(self) -> str:
         return self.full_name
 
-class AgentInfo(AbstractBaseModel):
-    company_name = models.CharField(max_length=255, null=True, unique=True)
-    company_address = models.CharField(max_length=255, null=True, unique=True)
-    company_email = models.EmailField(max_length=255, null=True, unique=True)
-    company_phone_number = models.CharField(max_length=11, null=True, unique=True)
-    biometric = models.ImageField(upload_to='biometric_images/', null=True, unique=True)
-    business_card = models.ImageField(upload_to='business_card_images/', null=True, unique=True)
-    id_card = models.ImageField(upload_to='id_card_images/', null=True, unique=True)
+class AgentInfo(AbstractBaseInfoModel):
+    STATUS_CHOICES = [
+        ('New', 'Pending'),
+        ('Approved', 'Approved'),
+        ('Rejected', 'Rejected'),
+    ]
+    company_name = models.CharField(max_length=255, null=True, blank=True)
+    company_address = models.CharField(max_length=255, null=True, blank=True)
+    company_email = models.EmailField(max_length=255, null=True, blank=True)
+    company_phone_number = models.CharField(max_length=11, null=True, blank=True)
+    business_card = models.ImageField(upload_to='business_card_images/', null=True, blank=True)
+    business_card_approval_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='New', verbose_name='Business card approval Status')
+    id_card = models.ImageField(upload_to='id_card_images/', null=True, blank=True)
+    id_card_approval_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='New', verbose_name='ID card approval Status')
     agent_user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='agent_info')
-    approval_status = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return self.company_name
 
 class BuyerPersonalInfo(CommonFields):
-    buyer_agreement = models.ImageField(upload_to='buyer_aggrement_images/', null=True, unique=True)
+    buyer_agreement = models.ImageField(upload_to='buyer_aggrement_images/', null=True, blank=True)
     buyer_user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='buyer_personal_info')
 
 class SellerPersonalInfo(CommonFields):
-    seller_agreement = models.ImageField(upload_to='seller_aggrement_images/', null=True, unique=True)
+    seller_agreement = models.ImageField(upload_to='seller_aggrement_images/', null=True, blank=True)
     seller_user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='seller_personal_info')
 
 class Ticket(AbstractBaseModel):

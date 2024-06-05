@@ -28,23 +28,72 @@ class ChangePasswordSerializer(serializers.Serializer):
         
         return value
 
+class CreateOrUpdateAgentInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AgentInfo
+        fields = [
+            'id', 'company_name', 'company_address', 
+            'company_email', 'company_phone_number', 'biometric', 
+            'business_card', 'id_card', 'passport'
+        ]
+
+    def update(self, instance, validated_data):
+        if instance.approval_status == "Approved":
+            raise ValidationError('Cannot update approved information.')
+        return super().update(instance, validated_data)
+
 class AgentInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = AgentInfo
         fields = [
             'id', 'company_name', 'company_address', 
             'company_email', 'company_phone_number', 'biometric', 
-            'business_card', 'id_card',
+            'business_card', 'id_card', 'passport' , 
+            'basic_approval_status', 'approval_status',
+            'passport_approval_status', 'biometric_approval_status',
+            'business_card_approval_status', 'id_card_approval_status',
         ]
+
+class CreateOrUpdateBuyerPersonalInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BuyerPersonalInfo
+        fields = [
+            'id', 'biometric', 'full_name', 'postal_address',
+            'marital_status', 'marriage_contract', 'elec_bill', 'passport',
+            'birth_certificate', 'id_or_driver_license', 'buyer_agreement',
+        ]
+
+    def update(self, instance, validated_data):
+        if instance.approval_status == "Approved":
+            raise ValidationError('Cannot update approved information.')
+        return super().update(instance, validated_data)
 
 class BuyerPersonalInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = BuyerPersonalInfo
         fields = [
             'id', 'biometric', 'full_name', 'postal_address',
-            'marital_status', 'marriage_contract', 'elec_bill',
+            'marital_status', 'marriage_contract', 'elec_bill', 'passport',
             'birth_certificate', 'id_or_driver_license', 'buyer_agreement',
+            'basic_approval_status', 'approval_status',
+            'passport_approval_status', 'biometric_approval_status',
+            'elec_bill_approval_status', 'birth_certificate_approval_status', 'id_or_driver_license_approval_status',
         ]
+
+class CreateOrUpdateSellerPersonalInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SellerPersonalInfo
+        fields = [
+            'id', 'biometric', 'full_name', 'postal_address',
+            'marital_status', 'marriage_contract', 'elec_bill',
+            'birth_certificate', 'id_or_driver_license',
+            'passport', 'seller_agreement'
+        ]
+
+    def update(self, instance, validated_data):
+        if instance.approval_status == "Approved":
+            raise ValidationError('Cannot update approved information.')
+        return super().update(instance, validated_data)
 
 class SellerPersonalInfoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -53,7 +102,10 @@ class SellerPersonalInfoSerializer(serializers.ModelSerializer):
             'id', 'biometric', 'full_name', 'postal_address',
             'marital_status', 'marriage_contract', 'elec_bill',
             'birth_certificate', 'id_or_driver_license',
-            'passport', 'seller_agreement'
+            'passport', 'seller_agreement',
+            'basic_approval_status', 'approval_status',
+            'passport_approval_status', 'biometric_approval_status',
+            'elec_bill_approval_status', 'birth_certificate_approval_status', 'id_or_driver_license_approval_status',
         ]
 
 class TicketSerializer(serializers.ModelSerializer):
