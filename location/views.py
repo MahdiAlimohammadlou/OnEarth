@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework import status, permissions
 from core.utils import get_current_url
 from rest_framework.views import APIView
-from .filters import PropertyFilter
+from .filters import PropertyFilter, ProjectFilter, CityFilter
 from django_filters import rest_framework as filters
 from django.shortcuts import get_object_or_404
 
@@ -21,6 +21,8 @@ class CountryViewSet(LocationBaseModelViewSet):
 class CityViewSet(LocationBaseModelViewSet):
     model = City
     serializer_class = CitySerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = CityFilter
 
     def list(self, request, *args, **kwargs):
         country_id = request.GET.get("country_id", None)
@@ -31,6 +33,18 @@ class CityViewSet(LocationBaseModelViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return super().list(request, *args, **kwargs)
+        
+    @action(detail=False, methods=['get'])
+    def search(self, request):
+        filtered_qs = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(filtered_qs)
+        url = get_current_url(request)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True, context={'url': url})
+            return self.get_paginated_response(serializer.data)
+        
+        serializer = self.get_serializer(filtered_qs, many=True, context={'url': url})
+        return Response(serializer.data)
 
 class NeighborhoodViewSet(LocationBaseModelViewSet):
     model = Neighborhood
@@ -49,6 +63,8 @@ class NeighborhoodViewSet(LocationBaseModelViewSet):
 class ProjectViewSet(LocationBaseModelViewSet):
     model = Project
     serializer_class = ProjectSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = ProjectFilter
 
     def list(self, request, *args, **kwargs):
         neighborhood_id = request.GET.get("neighborhood_id", None)
@@ -59,6 +75,18 @@ class ProjectViewSet(LocationBaseModelViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return super().list(request, *args, **kwargs)
+        
+    @action(detail=False, methods=['get'])
+    def search(self, request):
+        filtered_qs = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(filtered_qs)
+        url = get_current_url(request)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True, context={'url': url})
+            return self.get_paginated_response(serializer.data)
+        
+        serializer = self.get_serializer(filtered_qs, many=True, context={'url': url})
+        return Response(serializer.data)
 
 class PropertyViewSet(LocationBaseModelViewSet):
     model = Property
