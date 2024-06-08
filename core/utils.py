@@ -8,3 +8,4 @@ def get_full_url(obj, field_name, base_url):
         return base_url + field.url
     else:
         return ""
+    

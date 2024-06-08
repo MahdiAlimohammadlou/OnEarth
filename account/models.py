@@ -4,6 +4,11 @@ from .managers import UserManager
 from django.utils import timezone
 from datetime import timedelta
 from core.models import AbstractBaseModel, AbstractBaseInfoModel
+from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
+from django.conf import settings
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
+
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
@@ -133,3 +138,20 @@ class ReferralCode(AbstractBaseModel):
 
     def __str__(self):
         return f"{self.code} - {self.agent.email}"
+
+class Device(AbstractBaseModel):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='devices')
+    device_info = models.CharField(max_length=255, default="Unknown Device")
+    refresh_token = models.TextField()
+
+    def __str__(self):
+        return f"{self.user.email} - {self.device_info}"
+
+    def blacklist_tokens(self):
+        try:
+            token = self.refresh_token
+            refresh_token = RefreshToken(token)
+            refresh_token.blacklist()
+            return Response({"message": "Token has been blacklisted."})
+        except Exception as e:
+            return Response({"error": str(e)}, status=400)

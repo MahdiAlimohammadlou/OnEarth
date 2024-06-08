@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, AgentInfo, BuyerPersonalInfo, SellerPersonalInfo, Ticket
+from .models import User, AgentInfo, BuyerPersonalInfo, SellerPersonalInfo, Ticket, Device
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 
@@ -117,3 +117,8 @@ class TicketSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user
         return super().create(validated_data)
+
+class DeviceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Device
+        fields = ['id', 'device_info', 'created_at']
