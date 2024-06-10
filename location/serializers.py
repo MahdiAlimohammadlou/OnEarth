@@ -2,7 +2,8 @@ from rest_framework import serializers
 from .models import (Country, City, Project, ProjectImage, Facility,
                       Property, PropertyImage, Banner, Category,
                       ProjectVideo, PropertyVideo, PropertyLike,
-                      Neighborhood
+                      Neighborhood, ProjectBuildingPlan,
+                      PropertyBuildingPlan, PropertyOutwardView
                       )
 from core.serializers import BaseSerializer
 from financial.models import ShippingInfo, NFT
@@ -41,15 +42,13 @@ class FacilitySerializer(BaseSerializer):
         return get_full_url(obj, 'facility_icon', self.url)
 
 
-class ProjectImageSerializer(BaseSerializer):
-    image_full_url = serializers.SerializerMethodField()
-
-    class Meta:
+class ProjectImageSerializer(ImageFieldSerializer):
+    class Meta(ImageFieldSerializer.Meta):
         model = ProjectImage
-        fields = ['id', 'image', 'image_full_url']
 
-    def get_image_full_url(self, obj):
-        return get_full_url(obj, 'image', self.url)
+class ProjectBuildingPlanSerializer(ImageFieldSerializer):
+    class Meta(ImageFieldSerializer.Meta):
+        model = ProjectBuildingPlan
 
 class ProjectVideoSerializer(VideoFieldSerializer):
     class Meta(VideoFieldSerializer.Meta):
@@ -58,6 +57,14 @@ class ProjectVideoSerializer(VideoFieldSerializer):
 class PropertyImageSerializer(ImageFieldSerializer):
     class Meta(ImageFieldSerializer.Meta):
         model = PropertyImage
+
+class PropertyBuildingPlanSerializer(ImageFieldSerializer):
+    class Meta(ImageFieldSerializer.Meta):
+        model = PropertyBuildingPlan
+
+class PropertyOutwardViewSerializer(ImageFieldSerializer):
+    class Meta(ImageFieldSerializer.Meta):
+        model = PropertyOutwardView
 
 class PropertyVideoSerializer(VideoFieldSerializer):
     class Meta(VideoFieldSerializer.Meta):
@@ -72,8 +79,10 @@ class PropertySerializer(BaseSerializer):
     city = serializers.SerializerMethodField()
     project_title = serializers.SerializerMethodField()
     shipping_info = serializers.SerializerMethodField()
-    nfts = serializers.SerializerMethodField()
+    # nfts = serializers.SerializerMethodField()
     effective_price = serializers.SerializerMethodField()
+    palns = serializers.SerializerMethodField()
+    outward_views = serializers.SerializerMethodField()
     
     class Meta:
         model = Property
@@ -81,9 +90,10 @@ class PropertySerializer(BaseSerializer):
                     'longitude', 'description', 'price_per_nft', 'offer', 'effective_price',
                     'area', 'bedrooms', 'bathrooms', 'purpose', 'parking_space_count', 'has_maid_room',
                     'has_swimming_pool','has_steam_room', 'average_rating', 'cover_img',
-                    'cover_img_full_url', 'country', 'city', "master_count",
-                      "heating_option", "floor", "unit_number", 'videos', 'images',
-                       'shipping_info', 'nfts'
+                    'cover_img_full_url', 'country', 'city', 'master_count',
+                    'heating_option', 'floor', 'unit_number', 'videos', 'images',
+                    'shipping_info', 'palns', 'outward_views',
+                    #   'nfts'
                        ]
         
     def get_effective_price(self, obj):
@@ -97,10 +107,10 @@ class PropertySerializer(BaseSerializer):
         serializer = ShippingInfoSerializer(instance=shipping_info)
         return serializer.data  
         
-    def get_nfts(self, obj):
-        nfts = NFT.objects.filter(property=obj)
-        serializer = NFTSerializer(instance=nfts, many=True)
-        return serializer.data  
+    # def get_nfts(self, obj):
+    #     nfts = NFT.objects.filter(property=obj)
+    #     serializer = NFTSerializer(instance=nfts, many=True)
+    #     return serializer.data  
         
     def get_project_title(self, obj):
         return obj.project.title
@@ -115,6 +125,16 @@ class PropertySerializer(BaseSerializer):
         images_queryset = PropertyImage.objects.filter(property=obj)
         images_serializer = PropertyImageSerializer(instance=images_queryset, many=True, context={'url': self.url})
         return images_serializer.data  
+
+    def get_palns(self, obj):
+        palns_queryset = PropertyBuildingPlan.objects.filter(property=obj)
+        palns_serializer = PropertyBuildingPlanSerializer(instance=palns_queryset, many=True, context={'url': self.url})
+        return palns_serializer.data
+
+    def get_outward_views(self, obj):
+        queryset = PropertyOutwardView.objects.filter(property=obj)
+        serializer = PropertyOutwardViewSerializer(instance=queryset, many=True, context={'url': self.url})
+        return serializer.data
 
     def get_videos(self, obj):
         videos_queryset = PropertyVideo.objects.filter(property=obj)
@@ -141,6 +161,7 @@ class ProjectSerializer(BaseSerializer):
     country = serializers.SerializerMethodField()
     min_price = serializers.SerializerMethodField()
     max_price = serializers.SerializerMethodField()
+    plans = serializers.SerializerMethodField()
     
     class Meta:
         model = Project
@@ -149,19 +170,25 @@ class ProjectSerializer(BaseSerializer):
                     'min_bedrooms', 'max_bedrooms', 'min_area',
                     'max_area', 'cover_img', 'cover_img_full_url', 'slug',
                     'country', 'min_price', 'max_price', 'latitude',
-                    'longitude', 'images', 'facilities', 'videos']
+                    'longitude', 'images', 'facilities', 'videos', 'plans']
         
     def get_facilities(self, obj):
         facilities_queryset = obj.facilities.all()
         serializer = FacilitySerializer(instance=facilities_queryset, many=True, context={'url': self.url})
+        return serializer.data
     
     def get_images(self, obj):
         try:
-            images_queryset = ProjectImage.objects.get(project=obj)
+            images_queryset = ProjectImage.objects.filter(project=obj)
         except ProjectImage.DoesNotExist:
             return []
-        images_serializer = ProjectImageSerializer(instance=images_queryset, context={'url': self.url})
+        images_serializer = ProjectImageSerializer(instance=images_queryset, many=True, context={'url': self.url})
         return images_serializer.data
+    
+    def get_palns(self, obj):
+        palns_queryset = ProjectBuildingPlan.objects.filter(property=obj)
+        palns_serializer = ProjectBuildingPlanSerializer(instance=palns_queryset, many=True, context={'url': self.url})
+        return palns_serializer.data
     
     def get_videos(self, obj):
         videos_queryset = ProjectVideo.objects.filter(project=obj)

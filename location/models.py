@@ -121,11 +121,18 @@ class Project(AbstractBaseModel):
     
 
 class ProjectImage(AbstractBaseModel):
-    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='image')
-    image = models.ImageField(upload_to='project_images/', null = True, blank = True) 
+    project = models.ForeignKey('Project', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='project_images/') 
 
     def __str__(self):
         return self.project.title + ' Image'
+
+class ProjectBuildingPlan(AbstractBaseModel):
+    project = models.ForeignKey('Project', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='project_plan_images/') 
+
+    def __str__(self):
+        return self.project.title + ' building plan'
     
 class ProjectVideo(models.Model):
     project = models.ForeignKey(Project, related_name='videos', on_delete=models.CASCADE)
@@ -199,10 +206,24 @@ class Property(AbstractBaseModel):
     
 class PropertyImage(AbstractBaseModel):
     property = models.ForeignKey('Property', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='Property_images/', null = True, blank = True)
+    image = models.ImageField(upload_to='Property_images/')
 
     def __str__(self):
         return self.property.project.title + ' Image'
+    
+class PropertyBuildingPlan(AbstractBaseModel):
+    property = models.ForeignKey('Property', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='property_plan_images/') 
+
+    def __str__(self):
+        return self.property.project.title + ' building plan'
+    
+class PropertyOutwardView(AbstractBaseModel):
+    property = models.ForeignKey('Property', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='property_outward_images/') 
+
+    def __str__(self):
+        return self.property.project.title + ' outward view'
     
 class PropertyVideo(models.Model):
     property = models.ForeignKey(Property, related_name='videos', on_delete=models.CASCADE)
