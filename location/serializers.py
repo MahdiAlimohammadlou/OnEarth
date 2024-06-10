@@ -43,21 +43,13 @@ class FacilitySerializer(BaseSerializer):
 
 class ProjectImageSerializer(BaseSerializer):
     image_full_url = serializers.SerializerMethodField()
-    image_2d_full_url = serializers.SerializerMethodField()
-    image_3d_full_url = serializers.SerializerMethodField()
 
     class Meta:
         model = ProjectImage
-        fields = ['id', 'image', 'image_2d', 'image_3d', 'image_full_url', 'image_2d_full_url', 'image_3d_full_url']
+        fields = ['id', 'image', 'image_full_url']
 
     def get_image_full_url(self, obj):
         return get_full_url(obj, 'image', self.url)
-
-    def get_image_2d_full_url(self, obj):
-        return get_full_url(obj, 'image_2d', self.url)
-
-    def get_image_3d_full_url(self, obj):
-        return get_full_url(obj, 'image_3d', self.url)
 
 class ProjectVideoSerializer(VideoFieldSerializer):
     class Meta(VideoFieldSerializer.Meta):

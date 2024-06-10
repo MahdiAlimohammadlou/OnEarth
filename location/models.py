@@ -66,12 +66,12 @@ class Project(AbstractBaseModel):
     neighborhood = models.ForeignKey(Neighborhood, related_name="projects", on_delete=models.CASCADE, null=True, blank=True)
     description = models.TextField()
     average_rating = models.DecimalField(max_digits=2, decimal_places=1, default=5.0, validators=[MinValueValidator(0), MaxValueValidator(5)])
-    address = models.CharField(max_length=255)
+    address = models.TextField()
     facilities = models.ManyToManyField(Facility, related_name="projects")
     cover_img = models.ImageField(upload_to = "project_cover_images/", null = True, blank = True)
     slug = models.SlugField(unique=True, max_length=150, blank=True)
-    latitude = models.FloatField(null=True, blank=True)
-    longitude = models.FloatField(null=True, blank=True)
+    latitude = models.FloatField(null=True, blank=True, default=1.45648)
+    longitude = models.FloatField(null=True, blank=True, default=1.45648)
     offer = models.DecimalField(max_digits=5, decimal_places=2, validators=[MinValueValidator(0), MaxValueValidator(100)], null=True, blank=True, default=0)
     
     @property
@@ -121,10 +121,8 @@ class Project(AbstractBaseModel):
     
 
 class ProjectImage(AbstractBaseModel):
-    project = models.OneToOneField('Project', on_delete=models.CASCADE, related_name='image')
-    image = models.ImageField(upload_to='project_images/', null = True, blank = True)
-    image_2d = models.ImageField(upload_to='project_images_2d/', null = True, blank = True)
-    image_3d = models.ImageField(upload_to='project_images_3d/', null = True, blank = True)
+    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name='image')
+    image = models.ImageField(upload_to='project_images/', null = True, blank = True) 
 
     def __str__(self):
         return self.project.title + ' Image'
@@ -142,18 +140,26 @@ class Property(AbstractBaseModel):
 
     HEATING_OPTIONS = [
         ('none', 'None'),
-        ('gas', 'Gas'),
-        ('electric', 'Electric'),
-        ('oil', 'Oil'),
-        ('none', 'None'),
+        ('heating stoves', 'Heating Stoves'),
+        ('natural gas stove', 'Natural Gas Stove'),
+        ('room heater', 'Room Heater'),
+        ('central heating', 'Central Heating'),
+        ('central heating (share meter)', 'Central Heating (Share Meter)'),
+        ('central heating boiler (electric)', 'Central Heating Boiler (Electric)'),
+        ('central heating boilers (natural gas)', 'Central Heating Boilers (Natural Gas)'),
+        ('floor heating', 'Floor Heating'),
+        ('air conditioning', 'Air Conditioning'),
+        ('fan coil unit', 'Fan Coil Unit'),
+        ('solar energy', 'Solar Energy'),
+        ('elektrikli radyator', 'Elektrikli Radyator'),
     ]
 
     name = models.CharField(max_length=100)
     description = models.TextField()
     project = models.ForeignKey('Project', related_name='properties', on_delete=models.CASCADE)
     category = models.ForeignKey('Category', related_name='categories', on_delete=models.CASCADE)
-    latitude = models.FloatField(null=True, blank=True)
-    longitude = models.FloatField(null=True, blank=True)
+    latitude = models.FloatField(null=True, blank=True, default=1.45648)
+    longitude = models.FloatField(null=True, blank=True, default=1.45648)
     price_per_nft = models.DecimalField(max_digits=10, decimal_places=2)
     area = models.DecimalField(max_digits=10, decimal_places=2)
     bedrooms = models.IntegerField()
@@ -168,8 +174,8 @@ class Property(AbstractBaseModel):
     has_steam_room = models.BooleanField()
     average_rating = models.DecimalField(max_digits=2, decimal_places=1, default=5.0, validators=[MinValueValidator(0), MaxValueValidator(5)])
     cover_img = models.ImageField(upload_to = "property_cover_images/", null = True, blank = True)
-    floor = models.IntegerField(null=True, blank=True)
-    unit_number = models.IntegerField(null=True, blank=True)
+    floor = models.IntegerField(null=True, blank=True, default=1)
+    unit_number = models.IntegerField(null=True, blank=True, default=1)
     likes = models.IntegerField(default=0)
     offer = models.DecimalField(max_digits=5, decimal_places=2, validators=[MinValueValidator(0), MaxValueValidator(100)], null=True, blank=True, default=0)
 

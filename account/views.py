@@ -3,8 +3,7 @@ from rest_framework.decorators import api_view
 from rest_framework import status, generics
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-import redis, string, random, requests, jwt
-from django.conf import settings
+import redis, requests, jwt
 from .models import (User, Ticket, AgentInfo, BuyerPersonalInfo, SellerPersonalInfo, Device)
 from .serializers import (BuyerPersonalInfoSerializer, SellerPersonalInfoSerializer,
                            AgentInfoSerializer, TicketSerializer, UserSerializer,
@@ -17,18 +16,21 @@ from rest_framework.permissions import IsAuthenticated
 from core.views import InfoAPIView
 from account.models import User
 from django.contrib.auth.password_validation import validate_password
-from rest_framework_simplejwt.serializers import TokenVerifySerializer
-from django.core.exceptions import ValidationError
-from rest_framework_simplejwt.tokens import RefreshToken
-from account.utils import verify_otp, get_tokens_for_user, send_otp, get_device_info
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from account.utils import (validate_email_and_user, verify_otp, get_tokens_for_user,
+                            get_device_info, generate_and_send_otp, validate_email_and_password)
 
 def create_device_and_response(user, device_info, tokens):
-    if not Device.objects.filter(user=user, device_info=device_info).exists():
-        Device.objects.create(
-            user=user,
-            device_info=device_info,
-            refresh_token = tokens['refresh']
-        )
+    device, created = Device.objects.get_or_create(
+        user=user, 
+        device_info=device_info,
+        defaults={'refresh_token': tokens['refresh']}
+    )
+    
+    if not created and device.is_token_expired():
+        device.refresh_token = tokens['refresh']
+        device.save()
+        
     return Response({
         'access': tokens['access'],
         'refresh': tokens['refresh']
@@ -64,13 +66,27 @@ class ChangePasswordView(APIView):
         # Return serializer errors if any
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
 @api_view(['POST'])
-def generate_and_store_otp(request):
-    '''
-    This API view takes an email, generates an OTP code for the email,
-    and stores it in Redis for 2 minutes.
-    '''
+def generate_otp_sign_in(request):
+    if request.method == 'POST':
+        email = request.data.get('email')
+        password = request.data.get('password')
+
+        # Check if email and password are provided
+        if not email or not password:
+            return Response({'detail': 'Email and password fields are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Validate email and password
+        error, status_code = validate_email_and_password(email, password)
+        if error:
+            return Response(error, status=status_code)
+
+        # Generate and send OTP
+        response, status_code = generate_and_send_otp(email)
+        return Response(response, status=status_code)
+    
+@api_view(['POST'])
+def generate_otp_sign_up(request):
     if request.method == 'POST':
         email = request.data.get('email')
 
@@ -78,22 +94,32 @@ def generate_and_store_otp(request):
         if not email:
             return Response({'detail': 'Email field is required.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        otp_code = ''.join(random.choices(string.digits, k=6))
-        
-        try:
-            r = redis.Redis(
-                host=settings.REDIS_HOST,
-                port=settings.REDIS_PORT,
-                db=settings.OTP_REDIS_DB,
-            )
-            r.setex(email, 180, otp_code)
-            send_otp(email, otp_code)
-            return Response({'detail': 'OTP generated successfully.'}, status=status.HTTP_201_CREATED)
-        
-        except redis.exceptions.ConnectionError:
-            return Response({'detail': 'Failed to connect to Redis.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        except Exception as e:
-            return Response({'detail': f'An error occurred: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        # Validate email and check if user does not exist
+        error, status_code = validate_email_and_user(email, should_exist=False)
+        if error:
+            return Response(error, status=status_code)
+
+        # Generate and send OTP
+        response, status_code = generate_and_send_otp(email)
+        return Response(response, status=status_code)
+    
+@api_view(['POST'])
+def generate_otp_forgot(request):
+    if request.method == 'POST':
+        email = request.data.get('email')
+
+        # Check if email is provided
+        if not email:
+            return Response({'detail': 'Email field is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Validate email and check if user does not exist
+        error, status_code = validate_email_and_user(email, should_exist=True)
+        if error:
+            return Response(error, status=status_code)
+
+        # Generate and send OTP
+        response, status_code = generate_and_send_otp(email)
+        return Response(response, status=status_code)
 
 @api_view(['POST'])
 def sign_in_verify_otp(request):
@@ -107,23 +133,23 @@ def sign_in_verify_otp(request):
         entered_otp = request.data.get('entered_otp')
         # Check if all required fields are provided
         if not all([email, password, entered_otp]):
-            return Response({"detail": "All fields are required."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "Please fill in all fields."}, status=status.HTTP_400_BAD_REQUEST)
         
         otp_verification = verify_otp(email, entered_otp)
         if not otp_verification["status"]:
-            return Response({"detail": otp_verification["detail"]}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "Your OTP code is wrong."}, status=status.HTTP_400_BAD_REQUEST)
         
         try:
             # Check user existence
             user = User.objects.get(email=email)
             if not user.check_password(password):
-                return Response({"error": "Invalid Password"}, status=status.HTTP_401_UNAUTHORIZED)
+                return Response({"detail": "The password is incorrect."}, status=status.HTTP_401_UNAUTHORIZED)
             # Generate token for user
             tokens = get_tokens_for_user(user)
             device_info = get_device_info(request)
             return create_device_and_response(user, device_info, tokens)
         except User.DoesNotExist:
-            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"detail": "No user found with this email."}, status=status.HTTP_404_NOT_FOUND)
     except redis.RedisError as e:
         return Response({"detail": "Redis error: " + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     except Exception as e:
@@ -142,11 +168,11 @@ def sign_up_verify_otp(request):
         entered_otp = request.data.get('entered_otp')
         # Check if all required fields are provided
         if not all([email, phone_number, password, entered_otp]):
-            return Response({"detail": "All fields are required."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "Please fill in all fields."}, status=status.HTTP_400_BAD_REQUEST)
         
         otp_verification = verify_otp(email, entered_otp)
         if not otp_verification["status"]:
-            return Response({"detail": otp_verification["detail"]}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "The OTP is incorrect."}, status=status.HTTP_400_BAD_REQUEST)
         
         # Check for unique email and phone number
         if User.objects.filter(email=email).exists():
@@ -163,29 +189,54 @@ def sign_up_verify_otp(request):
         return Response({"detail": "Redis error: " + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     except Exception as e:
         return Response({"detail": "An error occurred: " + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+    
 @api_view(['POST'])
-def refresh_jwt(request):
-    try:
-        refresh_token = request.data.get('refresh_token')
-        refresh = RefreshToken(refresh_token)
-        new_access_token = refresh.access_token
-        return Response({
-            'access': str(new_access_token),
-        }, status=status.HTTP_200_OK)
-    except Exception as e:
-        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+def verify_otp_forgot(request):
+    if request.method == 'POST':
+        email = request.data.get('email')
+        entered_otp = request.data.get('otp')
 
+        # Check if email and otp are provided
+        if not email or not entered_otp:
+            return Response({'detail': 'Email and OTP fields are required.'}, status=status.HTTP_400_BAD_REQUEST)
 
+        # Verify OTP
+        verification_result = verify_otp(email, entered_otp)
+        if verification_result['status']:
+            return Response({'detail': 'OTP is correct.'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'detail': verification_result['detail']}, status=status.HTTP_400_BAD_REQUEST)
+        
 @api_view(['POST'])
-def verify_jwt(request):
-    try:
-        serializer = TokenVerifySerializer(data={'token': request.data.get('token')})
-        serializer.is_valid(raise_exception=True)
-        return Response({"message": "Token is valid"}, status=status.HTTP_200_OK)
-    except Exception as e:
-        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+def reset_password_with_otp(request):
+    if request.method == 'POST':
+        email = request.data.get('email')
+        entered_otp = request.data.get('otp')
+        new_password = request.data.get('password')
+        re_password = request.data.get('repassword')
 
+        # Check if all fields are provided
+        if not email or not entered_otp or not new_password or not re_password:
+            return Response({'detail': 'All fields are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Check if passwords match
+        if new_password != re_password:
+            return Response({'detail': 'Passwords do not match.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Verify OTP
+        verification_result = verify_otp(email, entered_otp)
+        if not verification_result['status']:
+            return Response({'detail': verification_result['detail']}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.get(email=email)
+        except ObjectDoesNotExist:
+            return Response({'detail': 'User not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Set new password
+        user.set_password(new_password)
+        user.save()
+        return Response({'detail': 'Password has been reset successfully.'}, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def check_user_existence(request, email):

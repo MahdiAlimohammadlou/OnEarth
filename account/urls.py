@@ -1,10 +1,11 @@
 from django.urls import path
 from .views import ( check_user_existence,
-    generate_and_store_otp, sign_up_verify_otp, get_tokens_for_user,
+    generate_otp_sign_up, generate_otp_sign_in, generate_otp_forgot,
+      sign_up_verify_otp, get_tokens_for_user,
     BuyerPersonalInfoAPIView, SellerPersonalInfoAPIView,
     AgentInfoAPIView, TicketListCreateView, UserMeView,
-    ChangePasswordView, DeviceListView, RevokeTokenView, sign_in_verify_otp, verify_jwt,
-    refresh_jwt
+    ChangePasswordView, DeviceListView, RevokeTokenView, sign_in_verify_otp,
+    verify_otp_forgot, reset_password_with_otp
 )
 from rest_framework_simplejwt.views import (
     TokenRefreshView,
@@ -13,9 +14,13 @@ from rest_framework_simplejwt.views import (
 
 urlpatterns = [
     #Auth
-    path('generate-otp/', generate_and_store_otp, name='generate_otp'),
+    path('generate-otp-sign-up/', generate_otp_sign_up, name='generate_otp_sign_up'),
+    path('generate-otp-sign-in/', generate_otp_sign_in, name='generate_otp_sign_in'),
+    path('generate-otp-forgot/', generate_otp_forgot, name='generate_otp_forgot'),
     path('sign-up-verify-otp/', sign_up_verify_otp, name='sign_up_verify_otp'),
     path('sign-in-verify-otp/', sign_in_verify_otp, name='sign_in_verify_otp'),
+    path('verify-otp-forgot/', verify_otp_forgot, name='verify_otp_forgot'),
+    path('reset-pass-with-otp/', reset_password_with_otp, name='reset_password_with_otp'),
     path('google-login/', get_tokens_for_user, name='google_login'),
     path('verify-jwt/', TokenVerifyView.as_view(), name='verify_jwt'),
     path('refresh-jwt/', TokenRefreshView.as_view(), name='refresh_jwt'),

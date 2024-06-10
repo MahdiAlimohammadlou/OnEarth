@@ -155,3 +155,11 @@ class Device(AbstractBaseModel):
             return Response({"message": "Token has been blacklisted."})
         except Exception as e:
             return Response({"error": str(e)}, status=400)
+        
+    def is_token_expired(self):
+        try:
+            token = self.refresh_token
+            refresh_token = RefreshToken(token)
+            return False
+        except Exception:
+            return True
