@@ -26,19 +26,14 @@ def validate_email_and_password(email, password):
 
 def generate_and_send_otp(email):
     otp_code = ''.join(random.choices(string.digits, k=6))
-    try:
-        r = redis.Redis(
-            host=settings.REDIS_HOST,
-            port=settings.REDIS_PORT,
-            db=settings.OTP_REDIS_DB,
-        )
-        r.setex(email, 180, otp_code)
-        send_otp(email, otp_code)
-        return {'detail': 'OTP generated and sent successfully.'}, status.HTTP_201_CREATED
-    except redis.exceptions.ConnectionError:
-        return {'detail': 'Failed to connect to Redis.'}, status.HTTP_500_INTERNAL_SERVER_ERROR
-    except Exception as e:
-        return {'detail': f'An error occurred: {str(e)}'}, status.HTTP_500_INTERNAL_SERVER_ERROR
+    if store_otp_in_redis(email, otp_code):
+        try:
+            send_otp(email, otp_code)
+            return {'detail': 'OTP generated and sent successfully.'}, status.HTTP_201_CREATED
+        except Exception as e:
+            return {'detail': f'Failed to send OTP: {str(e)}'}, status.HTTP_500_INTERNAL_SERVER_ERROR
+    else:
+        return {'detail': 'Failed to store OTP in Redis.'}, status.HTTP_500_INTERNAL_SERVER_ERROR
 
 
 def validate_email_and_user(email, should_exist=True):
@@ -98,3 +93,18 @@ def get_device_info(request):
     device_info = f"{user_agent.os.family} {user_agent.os.version_string} {user_agent.browser.family} {user_agent.browser.version_string} {user_agent.device.family}"
         
     return device_info
+
+def store_otp_in_redis(email, otp_code, expiration=180):
+    try:
+        r = redis.Redis(
+            host=settings.REDIS_HOST,
+            port=settings.REDIS_PORT,
+            db=settings.OTP_REDIS_DB,
+        )
+        r.setex(email, expiration, otp_code)
+        return True
+    except redis.exceptions.ConnectionError:
+        return False
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        return False

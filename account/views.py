@@ -18,7 +18,8 @@ from account.models import User
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from account.utils import (validate_email_and_user, verify_otp, get_tokens_for_user,
-                            get_device_info, generate_and_send_otp, validate_email_and_password)
+                            get_device_info, generate_and_send_otp, validate_email_and_password,
+                            store_otp_in_redis)
 
 def create_device_and_response(user, device_info, tokens):
     device, created = Device.objects.get_or_create(
@@ -203,6 +204,7 @@ def verify_otp_forgot(request):
         # Verify OTP
         verification_result = verify_otp(email, entered_otp)
         if verification_result['status']:
+            store_otp_in_redis(email, entered_otp, 900)
             return Response({'detail': 'OTP is correct.'}, status=status.HTTP_200_OK)
         else:
             return Response({'detail': verification_result['detail']}, status=status.HTTP_400_BAD_REQUEST)
