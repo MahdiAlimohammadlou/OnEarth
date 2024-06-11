@@ -173,8 +173,8 @@ REST_USE_JWT = True
 from datetime import timedelta
 SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('JWT',),
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=1),
-    'REFRESH_TOKEN_LIFETIME': timedelta(minutes=2),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=5),
     'ROTATE_REFRESH_TOKENS': False,
     'BLACKLIST_AFTER_ROTATION': True,
     'ALGORITHM': 'HS256',
@@ -196,5 +196,13 @@ OTP_REDIS_DB = os.getenv("OTP_REDIS_DB")
 CELERY_REDIS_DB = os.getenv("CELERY_REDIS_DB")
 
 #Celery
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_BROKER_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}/{CELERY_REDIS_DB}'
+CELERY_RESULT_BACKEND = f'redis://{REDIS_HOST}:{REDIS_PORT}/{CELERY_REDIS_DB}'
+from datetime import timedelta
+CELERY_BEAT_SCHEDULE = {
+    'remove_expired_devices': {
+        'task': 'account.tasks.remove_expired_devices',
+        'schedule': timedelta(weeks=1),
+    },
+}
+
