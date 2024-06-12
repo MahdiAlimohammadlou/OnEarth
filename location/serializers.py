@@ -81,7 +81,7 @@ class PropertySerializer(BaseSerializer):
     shipping_info = serializers.SerializerMethodField()
     # nfts = serializers.SerializerMethodField()
     effective_price = serializers.SerializerMethodField()
-    palns = serializers.SerializerMethodField()
+    plans = serializers.SerializerMethodField()
     outward_views = serializers.SerializerMethodField()
     
     class Meta:
@@ -92,7 +92,7 @@ class PropertySerializer(BaseSerializer):
                     'has_swimming_pool','has_steam_room', 'average_rating', 'cover_img',
                     'cover_img_full_url', 'country', 'city', 'master_count',
                     'heating_option', 'floor', 'unit_number', 'videos', 'images',
-                    'shipping_info', 'palns', 'outward_views',
+                    'shipping_info', 'plans', 'outward_views',
                     #   'nfts'
                        ]
         
@@ -126,10 +126,10 @@ class PropertySerializer(BaseSerializer):
         images_serializer = PropertyImageSerializer(instance=images_queryset, many=True, context={'url': self.url})
         return images_serializer.data  
 
-    def get_palns(self, obj):
-        palns_queryset = PropertyBuildingPlan.objects.filter(property=obj)
-        palns_serializer = PropertyBuildingPlanSerializer(instance=palns_queryset, many=True, context={'url': self.url})
-        return palns_serializer.data
+    def get_plans(self, obj):
+        plans_queryset = PropertyBuildingPlan.objects.filter(property=obj)
+        plans_serializer = PropertyBuildingPlanSerializer(instance=plans_queryset, many=True, context={'url': self.url})
+        return plans_serializer.data
 
     def get_outward_views(self, obj):
         queryset = PropertyOutwardView.objects.filter(property=obj)
@@ -185,8 +185,8 @@ class ProjectSerializer(BaseSerializer):
         images_serializer = ProjectImageSerializer(instance=images_queryset, many=True, context={'url': self.url})
         return images_serializer.data
     
-    def get_palns(self, obj):
-        palns_queryset = ProjectBuildingPlan.objects.filter(property=obj)
+    def get_plans(self, obj):
+        palns_queryset = ProjectBuildingPlan.objects.filter(project=obj)
         palns_serializer = ProjectBuildingPlanSerializer(instance=palns_queryset, many=True, context={'url': self.url})
         return palns_serializer.data
     

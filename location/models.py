@@ -63,7 +63,8 @@ class Facility(AbstractBaseModel):
 
 class Project(AbstractBaseModel):
     title = models.CharField(max_length=100)
-    neighborhood = models.ForeignKey(Neighborhood, related_name="projects", on_delete=models.CASCADE, null=True, blank=True)
+    neighborhood = models.ForeignKey(Neighborhood, related_name="projects", on_delete=models.CASCADE)
+    city = models.ForeignKey(City, related_name="cities", on_delete=models.CASCADE)
     description = models.TextField()
     average_rating = models.DecimalField(max_digits=2, decimal_places=1, default=5.0, validators=[MinValueValidator(0), MaxValueValidator(5)])
     address = models.TextField()
