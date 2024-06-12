@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import ( check_user_existence,
     generate_otp_sign_up, generate_otp_sign_in, generate_otp_forgot,
-      sign_up_verify_otp, get_tokens_for_user,
+      sign_up_verify_otp, verify_and_create_tokens,
     BuyerPersonalInfoAPIView, SellerPersonalInfoAPIView,
     AgentInfoAPIView, TicketListCreateView, UserMeView,
     ChangePasswordView, DeviceListView, RevokeTokenView, sign_in_verify_otp,
@@ -21,7 +21,7 @@ urlpatterns = [
     path('sign-in-verify-otp/', sign_in_verify_otp, name='sign_in_verify_otp'),
     path('verify-otp-forgot/', verify_otp_forgot, name='verify_otp_forgot'),
     path('reset-pass-with-otp/', reset_password_with_otp, name='reset_password_with_otp'),
-    path('google-login/', get_tokens_for_user, name='google_login'),
+    path('google-login/', verify_and_create_tokens, name='google_login'),
     path('verify-jwt/', TokenVerifyView.as_view(), name='verify_jwt'),
     path('refresh-jwt/', TokenRefreshView.as_view(), name='refresh_jwt'),
     path('check-user-existence/<str:phone_number>/', check_user_existence, name = 'check_user_existence'),

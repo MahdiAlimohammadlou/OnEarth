@@ -30,7 +30,7 @@ class CityViewSet(LocationBaseModelViewSet):
             url = get_current_url(request)
             queryset = City.objects.filter(country=country_id)
             serializer = CitySerializer(instance=queryset, many=True, context={'url' : url})
-            return serializer.data
+            return Response(serializer.data)
         else:
             return super().list(request, *args, **kwargs)
         
@@ -56,7 +56,7 @@ class NeighborhoodViewSet(LocationBaseModelViewSet):
             url = get_current_url(request)
             queryset = Neighborhood.objects.filter(city=city_id)
             serializer = NeighborhoodSerializer(instance=queryset, many=True, context={'url' : url})
-            return serializer.data
+            return Response(serializer.data)
         else:
             return super().list(request, *args, **kwargs)
 
@@ -79,7 +79,7 @@ class ProjectViewSet(LocationBaseModelViewSet):
             queryset = queryset.filter(city=city_id)
 
         serializer = ProjectSerializer(instance=queryset, many=True, context={'url': url})
-        return serializer.data
+        return Response(serializer.data) 
         
     @action(detail=False, methods=['get'])
     def search(self, request):
@@ -151,13 +151,13 @@ class BannerListView(APIView):
     def get(self, request):
         banners_queryset = Banner.objects.all()
         serializer = BannerSerializer(banners_queryset, many=True)
-        return serializer.data
+        return Response(serializer.data) 
 
 class PropertyCategoryListView(APIView):
     def get(self, request):
         queryset = PropertyCategory.objects.all()
         serializer = PropertyCategorySerializer(queryset, many=True)
-        return serializer.data
+        return Response(serializer.data)
 
 class PropertyLikeView(APIView):
     permission_classes = [permissions.IsAuthenticated]

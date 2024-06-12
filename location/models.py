@@ -64,7 +64,7 @@ class Facility(AbstractBaseModel):
 class Project(AbstractBaseModel):
     #Relations
     neighborhood = models.ForeignKey(Neighborhood, related_name="projects", on_delete=models.CASCADE)
-    city = models.ForeignKey(City, related_name="cities", on_delete=models.CASCADE)
+    city = models.ForeignKey(City, related_name="projects", on_delete=models.CASCADE)
     facilities = models.ManyToManyField(Facility, related_name="projects")
     #STR fields
     title = models.CharField(max_length=100)
