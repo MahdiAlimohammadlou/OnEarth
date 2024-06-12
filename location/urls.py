@@ -5,9 +5,8 @@ from rest_framework.response import Response
 
 from .views import (CountryViewSet, CityViewSet,
                      ProjectViewSet, PropertyViewSet,
-                     BannerListView, CategoryListView,
-                     PropertyLikeView, UserLikesView,
-                     NeighborhoodViewSet)
+                     BannerListView, PropertyLikeView,
+                     UserLikesView, NeighborhoodViewSet)
 
 router = DefaultRouter()
 
@@ -23,7 +22,6 @@ urlpatterns = [
     path('properties-with-offer/<int:country_id>', PropertyViewSet.as_view({'get': 'properties_with_offer'}), name='properties-with-offer'),
     path('properties-with-offer/', PropertyViewSet.as_view({'get': 'properties_with_offer'}), name='properties-with-offer'),
     path('banners/', BannerListView.as_view(), name="banners"),
-    path('categories/', CategoryListView.as_view(), name="categoriess"),
     path('like/', PropertyLikeView.as_view(), name="like"),
     path('user-likes/', UserLikesView.as_view(), name="user-like"),
 ]

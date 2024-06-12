@@ -62,18 +62,35 @@ class Facility(AbstractBaseModel):
         return self.name
 
 class Project(AbstractBaseModel):
-    title = models.CharField(max_length=100)
+    #Relations
     neighborhood = models.ForeignKey(Neighborhood, related_name="projects", on_delete=models.CASCADE)
     city = models.ForeignKey(City, related_name="cities", on_delete=models.CASCADE)
-    description = models.TextField()
-    average_rating = models.DecimalField(max_digits=2, decimal_places=1, default=5.0, validators=[MinValueValidator(0), MaxValueValidator(5)])
-    address = models.TextField()
     facilities = models.ManyToManyField(Facility, related_name="projects")
-    cover_img = models.ImageField(upload_to = "project_cover_images/", null = True, blank = True)
+    #STR fields
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+    address = models.TextField()
     slug = models.SlugField(unique=True, max_length=150, blank=True)
+    #Decimal fields
+    average_rating = models.DecimalField(max_digits=2, decimal_places=1, default=5.0, validators=[MinValueValidator(0), MaxValueValidator(5)])
     latitude = models.FloatField(null=True, blank=True, default=1.45648)
     longitude = models.FloatField(null=True, blank=True, default=1.45648)
     offer = models.DecimalField(max_digits=5, decimal_places=2, validators=[MinValueValidator(0), MaxValueValidator(100)], null=True, blank=True, default=0)
+    #Image fields
+    cover_img = models.ImageField(upload_to = "project_cover_images/", null = True, blank = True)
+    #Boolean fields
+    has_security = models.BooleanField(default=False)
+    has_theater = models.BooleanField(default=False)
+    has_gym = models.BooleanField(default=False)
+    has_meeting_room = models.BooleanField(default=False)
+    has_pool = models.BooleanField(default=False)
+    roofed_pool = models.BooleanField(default=False)
+    has_music_room = models.BooleanField(default=False)
+    has_yoga_room = models.BooleanField(default=False)
+    has_party_room = models.BooleanField(default=False)
+    has_spa = models.BooleanField(default=False)
+    has_parking = models.BooleanField(default=False)
+    roofed_parking = models.BooleanField(default=False)
     
     @property
     def min_price(self):
@@ -165,15 +182,16 @@ class Property(AbstractBaseModel):
     name = models.CharField(max_length=100)
     description = models.TextField()
     project = models.ForeignKey('Project', related_name='properties', on_delete=models.CASCADE)
-    category = models.ForeignKey('Category', related_name='categories', on_delete=models.CASCADE)
     latitude = models.FloatField(null=True, blank=True, default=1.45648)
     longitude = models.FloatField(null=True, blank=True, default=1.45648)
     price_per_nft = models.DecimalField(max_digits=10, decimal_places=2)
     area = models.DecimalField(max_digits=10, decimal_places=2)
-    bedrooms = models.IntegerField()
-    bathrooms = models.IntegerField()
+    bedrooms = models.IntegerField(default=0)
+    bathrooms = models.IntegerField(default=0)
+    tub_count = models.IntegerField(default=0)
+    pool_count = models.IntegerField(default=0)
     purpose = models.CharField(max_length = 255)
-    furnished = models.BooleanField()
+    furnished = models.BooleanField(default=False)
     parking_space_count = models.IntegerField()
     master_count = models.IntegerField()
     heating_option = models.CharField(max_length=50, choices=HEATING_OPTIONS, default='none')
@@ -242,16 +260,6 @@ class PropertyLike(models.Model):
 
     class Meta:
         unique_together = ('user', 'property')
-    
-class Category(AbstractBaseModel):
-    title = models.CharField(max_length=100)
-    category_icon = models.ImageField(upload_to="category_images/", null=True, blank=True)
-
-    def __str__(self) -> str:
-        if len(self.title) > 50:
-            return self.title[:50] + "..."
-        return self.title
-
 
 class Banner(AbstractBaseModel):
     title = models.TextField()

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import (Country, City, Facility, Project,
                       ProjectImage, Property, PropertyImage,
-                      Banner, Category, ProjectVideo, PropertyVideo,
+                      Banner, ProjectVideo, PropertyVideo,
                       Neighborhood, ProjectBuildingPlan, PropertyBuildingPlan, PropertyOutwardView)
 
 admin.site.register(Country)
@@ -16,7 +16,6 @@ admin.site.register(PropertyImage)
 admin.site.register(PropertyBuildingPlan)
 admin.site.register(PropertyOutwardView)
 admin.site.register(Banner)
-admin.site.register(Category)
 admin.site.register(ProjectVideo)
 admin.site.register(PropertyVideo)
 

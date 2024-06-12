@@ -9,9 +9,10 @@ class PropertyFilter(filters.FilterSet):
     max_price = filters.NumberFilter(field_name='price_per_nft', lookup_expr='lte')
     min_area = filters.NumberFilter(field_name='area', lookup_expr='gte')
     max_area = filters.NumberFilter(field_name='area', lookup_expr='lte')
-    categories = filters.CharFilter(field_name='category__title', lookup_expr='iexact')
     bedrooms = filters.NumberFilter(field_name='bedrooms', lookup_expr='exact')
     bathrooms = filters.NumberFilter(field_name='bathrooms', lookup_expr='exact')
+    pool_count = filters.NumberFilter(field_name='pool_count', lookup_expr='exact')
+    tub_count = filters.NumberFilter(field_name='tub_count', lookup_expr='exact')
     furnished = filters.BooleanFilter(field_name='furnished')
     has_image = filters.BooleanFilter(method='filter_has_image')
     has_video = filters.BooleanFilter(method='filter_has_video')
@@ -40,55 +41,63 @@ class PropertyFilter(filters.FilterSet):
 
     class Meta:
         model = Property
-        fields = ['country', 'city', 'min_price', 'max_price', 'min_area', 'max_area', 'categories', 'bedrooms', 'bathrooms', 'furnished', 'has_image', 'has_video', 'search']
+        fields = ['country', 'city', 'min_price', 'max_price', 'min_area', 'max_area', 'bedrooms', 'bathrooms', 'furnished', 'has_image', 'has_video', 'search']
 
 
 class ProjectFilter(filters.FilterSet):
     country = filters.CharFilter(field_name='city__country__name', lookup_expr='iexact')
     city = filters.CharFilter(field_name='city__name', lookup_expr='iexact')
+    search = filters.CharFilter(method='filter_search')
     min_price = filters.NumberFilter(method='filter_min_price')
     max_price = filters.NumberFilter(method='filter_max_price')
     min_area = filters.NumberFilter(field_name='properties__area', lookup_expr='gte')
     max_area = filters.NumberFilter(field_name='properties__area', lookup_expr='lte')
-    categories = filters.CharFilter(field_name='properties__category__title', lookup_expr='iexact')
-    bedrooms = filters.NumberFilter(field_name='properties__bedrooms', lookup_expr='iexact')
-    bathrooms = filters.NumberFilter(field_name='properties__bathrooms', lookup_expr='iexact')
     furnished = filters.BooleanFilter(field_name='properties__furnished')
+    # Booleans
     has_image = filters.BooleanFilter(method='filter_has_image')
     has_video = filters.BooleanFilter(method='filter_has_video')
-    search = filters.CharFilter(method='filter_search')
+    has_security = filters.BooleanFilter(field_name='properties__has_security')
+    has_theater = filters.BooleanFilter(field_name='properties__has_theater')
+    has_gym = filters.BooleanFilter(field_name='properties__has_gym')
+    has_meeting_room = filters.BooleanFilter(field_name='properties__has_meeting_room')
+    has_pool = filters.BooleanFilter(field_name='has_pool')
+    roofed_pool = filters.BooleanFilter(field_name='roofed_pool')
+    has_music_room = filters.BooleanFilter(field_name='has_music_room')
+    has_yoga_room = filters.BooleanFilter(field_name='has_yoga_room')
+    has_party_room = filters.BooleanFilter(field_name='has_party_room')
+    has_spa = filters.BooleanFilter(field_name='has_spa')
+    has_parking = filters.BooleanFilter(field_name='has_parking')
+    roofed_parking = filters.BooleanFilter(field_name='roofed_parking')
 
-    def filter_min_price(self, queryset, name, value):
-        # Calculate the effective price
-        queryset = queryset.annotate(
+    def _annotate_effective_price(self, queryset):
+        return queryset.annotate(
             effective_price=ExpressionWrapper(
                 F('properties__price_per_nft') * (1 - F('properties__offer') / 100),
                 output_field=FloatField()
             )
         ).distinct()
+
+    def filter_min_price(self, queryset, name, value):
+        queryset = self._annotate_effective_price(queryset)
         return queryset.filter(effective_price__gte=value)
 
     def filter_max_price(self, queryset, name, value):
-        # Calculate the effective price
-        queryset = queryset.annotate(
-            effective_price=ExpressionWrapper(
-                F('properties__price_per_nft') * (1 - F('properties__offer') / 100),
-                output_field=FloatField()
-            )
-        ).distinct()
+        queryset = self._annotate_effective_price(queryset)
         return queryset.filter(effective_price__lte=value)
 
     def filter_has_image(self, queryset, name, value):
+        queryset = queryset.annotate(image_count=Count('cover_img'))
         if value:
-            return queryset.annotate(image_count=Count('cover_img')).filter(image_count__gt=0)
+            return queryset.filter(image_count__gt=0)
         else:
-            return queryset.annotate(image_count=Count('cover_img')).filter(image_count=0)
+            return queryset.filter(image_count=0)
 
     def filter_has_video(self, queryset, name, value):
+        queryset = queryset.annotate(video_count=Count('videos'))
         if value:
-            return queryset.annotate(video_count=Count('videos')).filter(video_count__gt=0)
+            return queryset.filter(video_count__gt=0)
         else:
-            return queryset.annotate(video_count=Count('videos')).filter(video_count=0)
+            return queryset.filter(video_count=0)
 
     def filter_search(self, queryset, name, value):
         return queryset.filter(
@@ -100,7 +109,7 @@ class ProjectFilter(filters.FilterSet):
 
     class Meta:
         model = Project
-        fields = ['country', 'city', 'min_price', 'max_price', 'min_area', 'max_area', 'categories', 'bedrooms', 'bathrooms', 'furnished', 'has_image', 'has_video', 'search']
+        fields = ['country', 'city', 'min_price', 'max_price', 'min_area', 'max_area', 'furnished', 'has_image', 'has_video', 'search']
 
 
 class CityFilter(filters.FilterSet):

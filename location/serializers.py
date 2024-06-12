@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import (Country, City, Project, ProjectImage, Facility,
-                      Property, PropertyImage, Banner, Category,
+                      Property, PropertyImage, Banner,
                       ProjectVideo, PropertyVideo, PropertyLike,
                       Neighborhood, ProjectBuildingPlan,
                       PropertyBuildingPlan, PropertyOutwardView
@@ -93,6 +93,7 @@ class PropertySerializer(BaseSerializer):
                     'cover_img_full_url', 'country', 'city', 'master_count',
                     'heating_option', 'floor', 'unit_number', 'videos', 'images',
                     'shipping_info', 'plans', 'outward_views',
+                    'tub_count', 'pool_count',
                     #   'nfts'
                        ]
         
@@ -170,7 +171,11 @@ class ProjectSerializer(BaseSerializer):
                     'min_bedrooms', 'max_bedrooms', 'min_area',
                     'max_area', 'cover_img', 'cover_img_full_url', 'slug',
                     'country', 'min_price', 'max_price', 'latitude',
-                    'longitude', 'images', 'facilities', 'videos', 'plans']
+                    'longitude', 'images', 'facilities', 'videos', 'plans',
+                    'has_security', 'has_theater', 'has_gym', 'has_meeting_room',
+                    'has_pool', 'roofed_pool', 'has_music_room', 'has_yoga_room',
+                    'has_party_room', 'has_spa', 'has_parking', 'roofed_parking',
+                    ]
         
     def get_facilities(self, obj):
         facilities_queryset = obj.facilities.all()
@@ -283,17 +288,6 @@ class BannerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Banner
         fields = ['title', 'banner_img']
-
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        return {'data': data}
-        
-
-class CategorySerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Category
-        fields = ['title', 'category_icon']
 
     def to_representation(self, instance):
         data = super().to_representation(instance)

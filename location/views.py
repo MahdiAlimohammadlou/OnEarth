@@ -1,9 +1,9 @@
 from core.views import LocationBaseModelViewSet
-from .models import Country, City, Project, Property, Banner, Category, PropertyLike, Neighborhood
+from .models import Country, City, Project, Property, Banner, PropertyLike, Neighborhood
 from .serializers import (
     CountrySerializer, CitySerializer,
     ProjectSerializer, PropertySerializer,
-    BannerSerializer, CategorySerializer,
+    BannerSerializer,
     NeighborhoodSerializer)
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -139,13 +139,6 @@ class BannerListView(APIView):
         banners_queryset = Banner.objects.all()
         serializer = BannerSerializer(banners_queryset, many=True)
         return Response(serializer.data)
-
-class CategoryListView(APIView):
-    def get(self, request):
-        categories = Category.objects.all()
-        serializer = CategorySerializer(categories, many=True)
-        return Response(serializer.data)
-    
 
 class PropertyLikeView(APIView):
     permission_classes = [permissions.IsAuthenticated]
