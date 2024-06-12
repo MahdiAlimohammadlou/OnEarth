@@ -3,7 +3,8 @@ from .models import (Country, City, Project, ProjectImage, Facility,
                       Property, PropertyImage, Banner,
                       ProjectVideo, PropertyVideo, PropertyLike,
                       Neighborhood, ProjectBuildingPlan,
-                      PropertyBuildingPlan, PropertyOutwardView
+                      PropertyBuildingPlan, PropertyOutwardView,
+                      PropertyCategory
                       )
 from core.serializers import BaseSerializer
 from financial.models import ShippingInfo, NFT
@@ -70,6 +71,12 @@ class PropertyVideoSerializer(VideoFieldSerializer):
     class Meta(VideoFieldSerializer.Meta):
         model = PropertyVideo
 
+class PropertyCategorySerializer(BaseSerializer):
+    class Meta:
+        model = PropertyCategory
+        fields = [
+            'id', 'name'
+        ]
 
 class PropertySerializer(BaseSerializer):
     images = serializers.SerializerMethodField()

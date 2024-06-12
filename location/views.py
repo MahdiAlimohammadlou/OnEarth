@@ -1,9 +1,9 @@
 from core.views import LocationBaseModelViewSet
-from .models import Country, City, Project, Property, Banner, PropertyLike, Neighborhood
+from .models import Country, City, Project, Property, Banner, PropertyLike, Neighborhood, PropertyCategory
 from .serializers import (
     CountrySerializer, CitySerializer,
     ProjectSerializer, PropertySerializer,
-    BannerSerializer,
+    BannerSerializer, PropertyCategorySerializer,
     NeighborhoodSerializer)
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -30,7 +30,7 @@ class CityViewSet(LocationBaseModelViewSet):
             url = get_current_url(request)
             queryset = City.objects.filter(country=country_id)
             serializer = CitySerializer(instance=queryset, many=True, context={'url' : url})
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return serializer.data
         else:
             return super().list(request, *args, **kwargs)
         
@@ -44,7 +44,7 @@ class CityViewSet(LocationBaseModelViewSet):
             return self.get_paginated_response(serializer.data)
         
         serializer = self.get_serializer(filtered_qs, many=True, context={'url': url})
-        return Response(serializer.data)
+        return serializer.data
 
 class NeighborhoodViewSet(LocationBaseModelViewSet):
     model = Neighborhood
@@ -56,7 +56,7 @@ class NeighborhoodViewSet(LocationBaseModelViewSet):
             url = get_current_url(request)
             queryset = Neighborhood.objects.filter(city=city_id)
             serializer = NeighborhoodSerializer(instance=queryset, many=True, context={'url' : url})
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return serializer.data
         else:
             return super().list(request, *args, **kwargs)
 
@@ -79,7 +79,7 @@ class ProjectViewSet(LocationBaseModelViewSet):
             queryset = queryset.filter(city=city_id)
 
         serializer = ProjectSerializer(instance=queryset, many=True, context={'url': url})
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return serializer.data
         
     @action(detail=False, methods=['get'])
     def search(self, request):
@@ -133,12 +133,31 @@ class PropertyViewSet(LocationBaseModelViewSet):
             properties_with_offer = Property.objects.filter(offer__gt=0)
         serializer = self.get_serializer(properties_with_offer, many=True, context={'url': url})
         return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'])
+    def properties_with_category(self, request):
+        category_id = request.GET.get("category_id", None)
+        if category_id is not None:
+            url = get_current_url(request)
+            queryset = Property.objects.filter(category = category_id)
+            serializer = PropertySerializer(queryset, many=True, context={'url': url})
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({"detail": "Category not selected."}, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 class BannerListView(APIView):
     def get(self, request):
         banners_queryset = Banner.objects.all()
         serializer = BannerSerializer(banners_queryset, many=True)
-        return Response(serializer.data)
+        return serializer.data
+
+class PropertyCategoryListView(APIView):
+    def get(self, request):
+        queryset = PropertyCategory.objects.all()
+        serializer = PropertyCategorySerializer(queryset, many=True)
+        return serializer.data
 
 class PropertyLikeView(APIView):
     permission_classes = [permissions.IsAuthenticated]

@@ -179,31 +179,38 @@ class Property(AbstractBaseModel):
         ('elektrikli radyator', 'Elektrikli Radyator'),
     ]
 
-    name = models.CharField(max_length=100)
-    description = models.TextField()
+    #Relations
+    category = models.ForeignKey('PropertyCategory', related_name='properties', on_delete=models.CASCADE)
     project = models.ForeignKey('Project', related_name='properties', on_delete=models.CASCADE)
+    #STR fields
+    name = models.CharField(max_length=100)
+    purpose = models.CharField(max_length = 255)
+    heating_option = models.CharField(max_length=50, choices=HEATING_OPTIONS, default='none')
+    description = models.TextField()
+    #Decimals
     latitude = models.FloatField(null=True, blank=True, default=1.45648)
     longitude = models.FloatField(null=True, blank=True, default=1.45648)
     price_per_nft = models.DecimalField(max_digits=10, decimal_places=2)
     area = models.DecimalField(max_digits=10, decimal_places=2)
+    average_rating = models.DecimalField(max_digits=2, decimal_places=1, default=5.0, validators=[MinValueValidator(0), MaxValueValidator(5)])
+    offer = models.DecimalField(max_digits=5, decimal_places=2, validators=[MinValueValidator(0), MaxValueValidator(100)], null=True, blank=True, default=0)
+    #Integers
     bedrooms = models.IntegerField(default=0)
     bathrooms = models.IntegerField(default=0)
     tub_count = models.IntegerField(default=0)
     pool_count = models.IntegerField(default=0)
-    purpose = models.CharField(max_length = 255)
-    furnished = models.BooleanField(default=False)
     parking_space_count = models.IntegerField()
     master_count = models.IntegerField()
-    heating_option = models.CharField(max_length=50, choices=HEATING_OPTIONS, default='none')
+    floor = models.IntegerField(null=True, blank=True, default=1)
+    likes = models.IntegerField(default=0)
+    unit_number = models.IntegerField(null=True, blank=True, default=1)
+    #Boolians
+    furnished = models.BooleanField(default=False)
     has_maid_room = models.BooleanField()
     has_swimming_pool = models.BooleanField()
     has_steam_room = models.BooleanField()
-    average_rating = models.DecimalField(max_digits=2, decimal_places=1, default=5.0, validators=[MinValueValidator(0), MaxValueValidator(5)])
+    #Image
     cover_img = models.ImageField(upload_to = "property_cover_images/", null = True, blank = True)
-    floor = models.IntegerField(null=True, blank=True, default=1)
-    unit_number = models.IntegerField(null=True, blank=True, default=1)
-    likes = models.IntegerField(default=0)
-    offer = models.DecimalField(max_digits=5, decimal_places=2, validators=[MinValueValidator(0), MaxValueValidator(100)], null=True, blank=True, default=0)
 
     @property
     def effective_price(self):
@@ -260,6 +267,20 @@ class PropertyLike(models.Model):
 
     class Meta:
         unique_together = ('user', 'property')
+
+class PropertyCategory(models.Model):
+    CATEGORY_CHOICES = [
+        ('home', 'Home'),
+        ('apartment', 'Apartment'),
+        ('villas', 'Villas'),
+        ('penthouse', 'Penthouse'),
+        ('super luxury', 'Super Luxury'),
+    ]
+    
+    name = models.CharField(max_length=50, choices=CATEGORY_CHOICES, unique=True)
+
+    def __str__(self):
+        return self.get_name_display()
 
 class Banner(AbstractBaseModel):
     title = models.TextField()
