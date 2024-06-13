@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.db.models import Q
 from .utils import get_current_url
 from rest_framework.views import APIView
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import ValidationError, MethodNotAllowed
 
 # Create your views here.
 
@@ -27,6 +27,18 @@ class LocationBaseModelViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         serializer = self.get_serializer(instance, context={'url': url})
         return Response(serializer.data)
+    
+    def create(self, request, *args, **kwargs):
+        raise MethodNotAllowed('POST')
+
+    def update(self, request, *args, **kwargs):
+        raise MethodNotAllowed('PUT')
+
+    def partial_update(self, request, *args, **kwargs):
+        raise MethodNotAllowed('PATCH')
+
+    def destroy(self, request, *args, **kwargs):
+        raise MethodNotAllowed('DELETE')
 
 
 class InfoAPIView(APIView):
