@@ -18,7 +18,7 @@ class ImageFieldSerializer(BaseSerializer):
         return get_full_url(obj, 'image', self.url)
 
     class Meta:
-        fields = ['id', 'image', 'image_full_url']
+        fields = ['id', 'image_full_url']
         abstract = True
 
 class VideoFieldSerializer(BaseSerializer):
@@ -28,7 +28,7 @@ class VideoFieldSerializer(BaseSerializer):
         return get_full_url(obj, 'video_file', self.url)
 
     class Meta:
-        fields = ['id', 'video_file', 'video_full_url', 'title', 'description',]
+        fields = ['id', 'video_full_url', 'title', 'description',]
         abstract = True
 
 
@@ -37,7 +37,7 @@ class FacilitySerializer(BaseSerializer):
 
     class Meta:
         model = Facility
-        fields = ['id', 'name', 'facility_icon', 'facility_icon_full_url']
+        fields = ['id', 'name', 'facility_icon_full_url']
 
     def get_facility_icon_full_url(self, obj):
         return get_full_url(obj, 'facility_icon', self.url)
@@ -96,7 +96,7 @@ class PropertySerializer(BaseSerializer):
         fields = ['id', 'name', 'project', 'project_title', 'latitude',
                     'longitude', 'description', 'price_per_nft', 'offer', 'effective_price',
                     'area', 'bedrooms', 'bathrooms', 'purpose', 'parking_space_count', 'has_maid_room',
-                    'has_swimming_pool','has_steam_room', 'average_rating', 'cover_img',
+                    'has_swimming_pool','has_steam_room', 'average_rating',
                     'cover_img_full_url', 'country', 'city', 'master_count',
                     'heating_option', 'floor', 'unit_number', 'videos', 'images',
                     'shipping_info', 'plans', 'outward_views',
@@ -176,7 +176,7 @@ class ProjectSerializer(BaseSerializer):
         fields = ['id', 'title', 'neighborhood', 'description',
                    'average_rating', 'address', 'property_count',
                     'min_bedrooms', 'max_bedrooms', 'min_area',
-                    'max_area', 'cover_img', 'cover_img_full_url', 'slug',
+                    'max_area', 'cover_img_full_url', 'slug',
                     'country', 'min_price', 'max_price', 'latitude',
                     'longitude', 'images', 'facilities', 'videos', 'plans',
                     'has_security', 'has_theater', 'has_gym', 'has_meeting_room',
@@ -241,7 +241,7 @@ class NeighborhoodSerializer(BaseSerializer):
     class Meta:
         model = Neighborhood
         fields = [
-         "name", "city", "description", "neighborhood_img",
+         "name", "city", "description",
          "full_neighborhood_img_url"
         ]
 
@@ -258,7 +258,7 @@ class CitySerializer(BaseSerializer):
     
     class Meta:
         model = City
-        fields = ['id', 'name', 'country', 'description', 'city_img', 'city_img_full_url',
+        fields = ['id', 'name', 'country', 'description', 'average_groth', 'city_img_full_url',
                    'project_count', 'min_price', 'max_price']
 
     def get_project_count(self, obj):
@@ -280,7 +280,7 @@ class CountrySerializer(BaseSerializer):
 
     class Meta:
         model = Country
-        fields = ['id', 'name', 'code', 'country_img', 'flag_img', 'country_img_full_url', 'flag_img_full_url']
+        fields = ['id', 'name', 'code', 'country_img_full_url', 'flag_img_full_url']
 
     def get_country_img_full_url(self, obj):
         return get_full_url(obj, 'country_img', self.url)
@@ -294,7 +294,7 @@ class BannerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Banner
-        fields = ['title', 'banner_img']
+        fields = ['title',]
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
