@@ -178,10 +178,11 @@ class ProjectSerializer(BaseSerializer):
                     'min_bedrooms', 'max_bedrooms', 'min_area',
                     'max_area', 'cover_img_full_url', 'slug',
                     'country', 'min_price', 'max_price', 'latitude',
-                    'longitude', 'images', 'facilities', 'videos', 'plans',
+                    'longitude', 'offer',
                     'has_security', 'has_theater', 'has_gym', 'has_meeting_room',
                     'has_pool', 'roofed_pool', 'has_music_room', 'has_yoga_room',
                     'has_party_room', 'has_spa', 'has_parking', 'roofed_parking',
+                    'images', 'facilities', 'videos', 'plans',
                     ]
         
     def get_facilities(self, obj):

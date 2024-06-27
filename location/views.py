@@ -13,6 +13,7 @@ from rest_framework.views import APIView
 from .filters import PropertyFilter, ProjectFilter, CityFilter
 from django_filters import rest_framework as filters
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
 
 class CountryViewSet(LocationBaseModelViewSet):
     model = Country
@@ -95,6 +96,20 @@ class ProjectViewSet(LocationBaseModelViewSet):
         
         serializer = self.get_serializer(filtered_qs, many=True, context={'url': url})
         return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'])
+    def projects_with_offer(self, request, country_id=None):
+        url = get_current_url(request)
+        if country_id is not None:
+            projects_with_offer = Project.objects.filter(
+                Q(city__country_id=country_id) & (Q(offer__gt=0) | Q(properties__offer__gt=0))
+            ).distinct()
+        else :
+            projects_with_offer = projects_with_offer = Project.objects.filter( 
+                Q(offer__gt=0) | Q(properties__offer__gt=0)
+            ).distinct()
+        serializer = self.get_serializer(projects_with_offer, many=True, context={'url': url})
+        return Response(serializer.data)
 
 class PropertyViewSet(LocationBaseModelViewSet):
     model = Property
@@ -122,19 +137,6 @@ class PropertyViewSet(LocationBaseModelViewSet):
             return self.get_paginated_response(serializer.data)
         
         serializer = self.get_serializer(filtered_qs, many=True, context={'url': url})
-        return Response(serializer.data)
-
-    @action(detail=False, methods=['get'])
-    def properties_with_offer(self, request, country_id=None):
-        url = get_current_url(request)
-        if country_id is not None:
-            properties_with_offer = Property.objects.filter(
-            project__city__country_id=country_id,
-            offer__gt=0
-            )
-        else :
-            properties_with_offer = Property.objects.filter(offer__gt=0)
-        serializer = self.get_serializer(properties_with_offer, many=True, context={'url': url})
         return Response(serializer.data)
     
     @action(detail=False, methods=['get'])
