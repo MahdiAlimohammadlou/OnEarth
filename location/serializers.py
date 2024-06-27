@@ -251,14 +251,14 @@ class NeighborhoodSerializer(BaseSerializer):
 
 
 class CitySerializer(BaseSerializer):
-    city_img_full_url = serializers.SerializerMethodField()
+    img_full_url = serializers.SerializerMethodField()
     project_count = serializers.SerializerMethodField()
     min_price = serializers.SerializerMethodField()
     max_price = serializers.SerializerMethodField()
     
     class Meta:
         model = City
-        fields = ['id', 'name', 'country', 'description', 'average_groth', 'city_img_full_url',
+        fields = ['id', 'name', 'country', 'description', 'average_groth', 'img_full_url',
                    'project_count', 'min_price', 'max_price']
 
     def get_project_count(self, obj):
@@ -270,19 +270,19 @@ class CitySerializer(BaseSerializer):
     def get_max_price(self, obj):
         return obj.max_price
     
-    def get_city_img_full_url(self, obj):
+    def get_img_full_url(self, obj):
         return get_full_url(obj, 'city_img', self.url)
     
 
 class CountrySerializer(BaseSerializer):
-    country_img_full_url = serializers.SerializerMethodField()
+    img_full_url = serializers.SerializerMethodField()
     flag_img_full_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Country
-        fields = ['id', 'name', 'code', 'country_img_full_url', 'flag_img_full_url']
+        fields = ['id', 'name', 'code', 'img_full_url', 'flag_img_full_url']
 
-    def get_country_img_full_url(self, obj):
+    def get_img_full_url(self, obj):
         return get_full_url(obj, 'country_img', self.url)
         
     def get_flag_img_full_url(self, obj):

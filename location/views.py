@@ -69,6 +69,7 @@ class ProjectViewSet(LocationBaseModelViewSet):
     def list(self, request, *args, **kwargs):
         neighborhood_id = request.GET.get("neighborhood_id", None)
         city_id = request.GET.get("city_id", None)
+        country_id = request.GET.get("country_id", None)
 
         url = get_current_url(request)
         queryset = Project.objects.all()
@@ -77,6 +78,8 @@ class ProjectViewSet(LocationBaseModelViewSet):
             queryset = queryset.filter(neighborhood=neighborhood_id)
         if city_id is not None:
             queryset = queryset.filter(city=city_id)
+        if country_id is not None:
+            queryset = queryset.filter(city__country=country_id)
 
         serializer = ProjectSerializer(instance=queryset, many=True, context={'url': url})
         return Response(serializer.data) 
