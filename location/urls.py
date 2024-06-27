@@ -21,6 +21,7 @@ urlpatterns = [
     # API urls
     path('', include(router.urls)),
     path('projects-with-offer/<int:country_id>', ProjectViewSet.as_view({'get': 'projects_with_offer'}), name='projects_with_offer'),
+    path('projects-with-offer/', ProjectViewSet.as_view({'get': 'projects_with_offer'}), name='projects_with_offer'),
     path('properties-with-category/', PropertyViewSet.as_view({'get': 'properties_with_category'}), name='properties_with_category'),
     path('property-categories/', PropertyCategoryListView.as_view(), name="property-categories"),
     path('banners/', BannerListView.as_view(), name="banners"),
