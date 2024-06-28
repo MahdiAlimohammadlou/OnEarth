@@ -148,7 +148,6 @@ class ProjectSerializer(BaseSerializer):
     images = serializers.SerializerMethodField()
     videos = serializers.SerializerMethodField()
     cover_img_full_url = serializers.SerializerMethodField()
-    facilities = serializers.SerializerMethodField()
     property_count = serializers.SerializerMethodField()
     min_bedrooms = serializers.SerializerMethodField()
     max_bedrooms = serializers.SerializerMethodField()
@@ -170,7 +169,7 @@ class ProjectSerializer(BaseSerializer):
                     'has_security', 'has_theater', 'has_gym', 'has_meeting_room',
                     'has_pool', 'roofed_pool', 'has_music_room', 'has_yoga_room',
                     'has_party_room', 'has_spa', 'has_parking', 'roofed_parking',
-                    'images', 'facilities', 'videos', 'plans',
+                    'images', 'videos', 'plans',
                     ]
     
     def get_images(self, obj):
