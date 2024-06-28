@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import (Country, City, Facility, Project,
+from .models import (Country, City, Project,
                       ProjectImage, Property, PropertyImage,
                       Banner, ProjectVideo, PropertyVideo,
                       Neighborhood, ProjectBuildingPlan, PropertyBuildingPlan,
@@ -8,7 +8,6 @@ from .models import (Country, City, Facility, Project,
 admin.site.register(Country)
 admin.site.register(City)
 admin.site.register(Neighborhood)
-admin.site.register(Facility)
 admin.site.register(Project)
 admin.site.register(ProjectImage)
 admin.site.register(ProjectBuildingPlan)

@@ -53,19 +53,10 @@ class Neighborhood(models.Model):
     def __str__(self):
         return self.name
 
-
-class Facility(AbstractBaseModel):
-    name = models.CharField(max_length=100)
-    facility_icon = models.ImageField(upload_to="facility_icons/", null = True, blank = True) 
-
-    def __str__(self):
-        return self.name
-
 class Project(AbstractBaseModel):
     #Relations
     neighborhood = models.ForeignKey(Neighborhood, related_name="projects", on_delete=models.CASCADE)
     city = models.ForeignKey(City, related_name="projects", on_delete=models.CASCADE)
-    facilities = models.ManyToManyField(Facility, related_name="projects")
     #STR fields
     title = models.CharField(max_length=100)
     description = models.TextField()

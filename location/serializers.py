@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import (Country, City, Project, ProjectImage, Facility,
+from .models import (Country, City, Project, ProjectImage,
                       Property, PropertyImage, Banner,
                       ProjectVideo, PropertyVideo, PropertyLike,
                       Neighborhood, ProjectBuildingPlan,
@@ -30,18 +30,6 @@ class VideoFieldSerializer(BaseSerializer):
     class Meta:
         fields = ['id', 'video_full_url', 'title', 'description',]
         abstract = True
-
-
-class FacilitySerializer(BaseSerializer):
-    facility_icon_full_url = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Facility
-        fields = ['id', 'name', 'facility_icon_full_url']
-
-    def get_facility_icon_full_url(self, obj):
-        return get_full_url(obj, 'facility_icon', self.url)
-
 
 class ProjectImageSerializer(ImageFieldSerializer):
     class Meta(ImageFieldSerializer.Meta):
@@ -184,11 +172,6 @@ class ProjectSerializer(BaseSerializer):
                     'has_party_room', 'has_spa', 'has_parking', 'roofed_parking',
                     'images', 'facilities', 'videos', 'plans',
                     ]
-        
-    def get_facilities(self, obj):
-        facilities_queryset = obj.facilities.all()
-        serializer = FacilitySerializer(instance=facilities_queryset, many=True, context={'url': self.url})
-        return serializer.data
     
     def get_images(self, obj):
         try:
