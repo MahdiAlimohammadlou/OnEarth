@@ -20,9 +20,9 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('account/', include("account.urls")),
-    path('location/', include("location.urls")),
+    path('secret-onearth-admin/', admin.site.urls),
+    path('v1/account/', include("account.urls")),
+    path('v1/location/', include("location.urls")),
 ]
 
 if settings.DEBUG :
