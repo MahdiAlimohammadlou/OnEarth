@@ -263,7 +263,9 @@ class CountrySerializer(BaseSerializer):
 
     class Meta:
         model = Country
-        fields = ['id', 'name', 'code', 'img_full_url', 'flag_img_full_url']
+        fields = ['id', 'name', 'code',
+                   'img_full_url', 'flag_img_full_url'
+                   ]
 
     def get_img_full_url(self, obj):
         return get_full_url(obj, 'country_img', self.url)

@@ -20,7 +20,6 @@ from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from account.utils import (validate_email_and_user, verify_otp, get_tokens_for_user,
                             get_device_info, generate_and_send_otp, validate_email_and_password,
                             store_otp_in_redis)
-from django.views.decorators.csrf import csrf_exempt
 
 def create_device_and_response(user, device_info, tokens):
     device, created = Device.objects.get_or_create(

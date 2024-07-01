@@ -2,7 +2,6 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.db.models import Q
-from .utils import get_current_url
 from rest_framework.views import APIView
 from rest_framework.exceptions import ValidationError, MethodNotAllowed
 
@@ -17,15 +16,13 @@ class LocationBaseModelViewSet(viewsets.ModelViewSet):
         return self.model.objects.all()
     
     def list(self, request, *args, **kwargs):
-        url = get_current_url(request)
         queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True, context={'url': url})
+        serializer = self.get_serializer(instance = queryset, many=True, context={'request' : request})
         return Response(serializer.data)
 
     def retrieve(self, request, *args, **kwargs):
-        url = get_current_url(request)
         instance = self.get_object()
-        serializer = self.get_serializer(instance, context={'url': url})
+        serializer = self.get_serializer(instance, context={'request' : request})
         return Response(serializer.data)
     
     def create(self, request, *args, **kwargs):
