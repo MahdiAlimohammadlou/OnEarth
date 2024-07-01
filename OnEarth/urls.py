@@ -20,10 +20,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('account/', include("account.urls")),
-    path('location/', include("location.urls")),
+    path('secret-onearth-admin/', admin.site.urls),
+    path('v1/account/', include("account.urls")),
+    path('v1/location/', include("location.urls")),
 ]
 
 if settings.DEBUG :
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

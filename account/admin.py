@@ -18,7 +18,7 @@ class UserAdmin(BaseUserAdmin):
 
     fieldsets = (
         (None, {"fields":("email","phone_number", "password")}),
-        ("permisions", {"fields" : ("is_active", "is_admin", "is_superuser", "is_agent",
+        ("permisions", {"fields" : ("is_admin", "is_superuser", "is_agent",
                                      "is_buyer", "is_seller", "last_login", "groups")})
     )
 
@@ -35,21 +35,21 @@ class TicketAdmin(admin.ModelAdmin):
     list_filter = ('status', 'created_at', 'updated_at', 'department')
     search_fields = ('subject', 'user__email', 'assigned_user__email', 'department')
 
-class AgentInfoAdmin(admin.ModelAdmin):
-    list_display = ['company_name', 'company_address', 'company_email', 'company_phone_number', 'approval_status']
-    list_filter = ['approval_status']
+# class AgentInfoAdmin(admin.ModelAdmin):
+#     list_display = ['company_name', 'company_address', 'company_email', 'company_phone_number', 'approval_status']
+#     list_filter = ['approval_status']
 
-class BuyerPersonalInfoAdmin(admin.ModelAdmin):
-    list_display = [ 'buyer_user', 'approval_status']
-    list_filter = ['approval_status']
+# class BuyerPersonalInfoAdmin(admin.ModelAdmin):
+#     list_display = [ 'buyer_user', 'approval_status']
+#     list_filter = ['approval_status']
 
-class SellerPersonalInfoAdmin(admin.ModelAdmin):
-    list_display = [ 'seller_user', 'approval_status']
-    list_filter = ['approval_status']
+# class SellerPersonalInfoAdmin(admin.ModelAdmin):
+#     list_display = [ 'seller_user', 'approval_status']
+#     list_filter = ['approval_status']
 
 admin.site.register(Ticket, TicketAdmin)
 admin.site.register(User, UserAdmin)
-admin.site.register(BuyerPersonalInfo, BuyerPersonalInfoAdmin)
-admin.site.register(SellerPersonalInfo, SellerPersonalInfoAdmin)
-admin.site.register(AgentInfo, AgentInfoAdmin)
+admin.site.register(BuyerPersonalInfo)
+admin.site.register(SellerPersonalInfo)
+admin.site.register(AgentInfo)
 

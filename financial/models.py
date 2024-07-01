@@ -25,6 +25,7 @@ class ShippingInfo(AbstractBaseModel):
         validators=[MinValueValidator(0), MaxValueValidator(100)],
         default=1
     )
+    extra_fee_description = models.TextField()
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=11000)
     connections = models.DecimalField(max_digits=10, decimal_places=2, default=236)
     payoff_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)

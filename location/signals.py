@@ -10,6 +10,9 @@ def create_project_slug(sender, instance, **kwargs):
 
 @receiver(pre_save, sender=Project)
 def set_project_properties_offer(sender, instance, **kwargs):
-    if instance.offer:
-        instance.properties.update(offer = instance.offer)
+    if instance.pk:
+        if instance.offer:
+            if not instance.properties:
+                instance.properties = {}
+            instance.properties.update(offer=instance.offer)
 

@@ -1,12 +1,11 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from rest_framework.decorators import action
-from rest_framework.response import Response
 
 from .views import (CountryViewSet, CityViewSet,
                      ProjectViewSet, PropertyViewSet,
-                     BannerListView, CategoryListView,
-                     PropertyLikeView, UserLikesView)
+                     BannerListView, PropertyLikeView,
+                     UserLikesView, NeighborhoodViewSet,
+                     PropertyCategoryListView)
 
 router = DefaultRouter()
 
@@ -14,26 +13,16 @@ router.register('countries', CountryViewSet, basename='country')
 router.register('cities', CityViewSet, basename='city')
 router.register('projects', ProjectViewSet, basename='project')
 router.register('properties', PropertyViewSet, basename='property')
+router.register('neighborhoods', NeighborhoodViewSet, basename='neighborhood')
 
 urlpatterns = [
     # API urls
     path('', include(router.urls)),
-    path('properties-with-offer/<int:country_id>', PropertyViewSet.as_view({'get': 'properties_with_offer'}), name='properties-with-offer'),
-    path('properties-with-offer/', PropertyViewSet.as_view({'get': 'properties_with_offer'}), name='properties-with-offer'),
+    path('projects-with-offer/<int:country_id>', ProjectViewSet.as_view({'get': 'projects_with_offer'}), name='projects_with_offer'),
+    path('projects-with-offer/', ProjectViewSet.as_view({'get': 'projects_with_offer'}), name='projects_with_offer'),
+    path('properties-with-category/', PropertyViewSet.as_view({'get': 'properties_with_category'}), name='properties_with_category'),
+    path('property-categories/', PropertyCategoryListView.as_view(), name="property-categories"),
     path('banners/', BannerListView.as_view(), name="banners"),
-    path('categories/', CategoryListView.as_view(), name="categoriess"),
     path('like/', PropertyLikeView.as_view(), name="like"),
     path('user-likes/', UserLikesView.as_view(), name="user-like"),
 ]
-
-# for viewset in [CountryViewSet, CityViewSet, ProjectViewSet, PropertyViewSet]:
-#     basename = getattr(viewset, 'basename', None)
-#     if basename:
-#         urlpatterns.append(
-#             path(
-#                 f'{router.registry[basename].url}/search/',
-#                 viewset.as_view({'get': 'search'}),
-#                 name=f'{basename}-search'
-#             )
-#         )
-

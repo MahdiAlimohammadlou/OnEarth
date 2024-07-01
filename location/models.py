@@ -53,27 +53,35 @@ class Neighborhood(models.Model):
     def __str__(self):
         return self.name
 
-
-class Facility(AbstractBaseModel):
-    name = models.CharField(max_length=100)
-    facility_icon = models.ImageField(upload_to="facility_icons/", null = True, blank = True) 
-
-    def __str__(self):
-        return self.name
-
 class Project(AbstractBaseModel):
+    #Relations
+    neighborhood = models.ForeignKey(Neighborhood, related_name="projects", on_delete=models.CASCADE)
+    city = models.ForeignKey(City, related_name="projects", on_delete=models.CASCADE)
+    #STR fields
     title = models.CharField(max_length=100)
-    city = models.ForeignKey('City', related_name = "projects", on_delete=models.CASCADE)
-    neighborhood = models.ForeignKey(Neighborhood, related_name="projects", on_delete=models.CASCADE, null=True, blank=True)
     description = models.TextField()
-    average_rating = models.DecimalField(max_digits=2, decimal_places=1, default=5.0, validators=[MinValueValidator(0), MaxValueValidator(5)])
-    address = models.CharField(max_length=255)
-    facilities = models.ManyToManyField(Facility, related_name="projects")
-    cover_img = models.ImageField(upload_to = "project_cover_images/", null = True, blank = True)
+    address = models.TextField()
     slug = models.SlugField(unique=True, max_length=150, blank=True)
-    latitude = models.FloatField(null=True, blank=True)
-    longitude = models.FloatField(null=True, blank=True)
+    #Decimal fields
+    average_rating = models.DecimalField(max_digits=2, decimal_places=1, default=5.0, validators=[MinValueValidator(0), MaxValueValidator(5)])
+    latitude = models.FloatField(null=True, blank=True, default=1.45648)
+    longitude = models.FloatField(null=True, blank=True, default=1.45648)
     offer = models.DecimalField(max_digits=5, decimal_places=2, validators=[MinValueValidator(0), MaxValueValidator(100)], null=True, blank=True, default=0)
+    #Image fields
+    cover_img = models.ImageField(upload_to = "project_cover_images/", null = True, blank = True)
+    #Boolean fields
+    has_security = models.BooleanField(default=False)
+    has_theater = models.BooleanField(default=False)
+    has_gym = models.BooleanField(default=False)
+    has_meeting_room = models.BooleanField(default=False)
+    has_pool = models.BooleanField(default=False)
+    roofed_pool = models.BooleanField(default=False)
+    has_music_room = models.BooleanField(default=False)
+    has_yoga_room = models.BooleanField(default=False)
+    has_party_room = models.BooleanField(default=False)
+    has_spa = models.BooleanField(default=False)
+    has_parking = models.BooleanField(default=False)
+    roofed_parking = models.BooleanField(default=False)
     
     @property
     def min_price(self):
@@ -115,21 +123,25 @@ class Project(AbstractBaseModel):
     
     @property
     def country(self):
-        return self.city.country.name
-
+        return self.neighborhood.city.country.name
 
     def __str__(self):
         return self.title
     
 
 class ProjectImage(AbstractBaseModel):
-    project = models.OneToOneField('Project', on_delete=models.CASCADE, related_name='image')
-    image = models.ImageField(upload_to='project_images/', null = True, blank = True)
-    image_2d = models.ImageField(upload_to='project_images_2d/', null = True, blank = True)
-    image_3d = models.ImageField(upload_to='project_images_3d/', null = True, blank = True)
+    project = models.ForeignKey('Project', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='project_images/') 
 
     def __str__(self):
         return self.project.title + ' Image'
+
+class ProjectBuildingPlan(AbstractBaseModel):
+    project = models.ForeignKey('Project', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='project_plan_images/') 
+
+    def __str__(self):
+        return self.project.title + ' building plan'
     
 class ProjectVideo(models.Model):
     project = models.ForeignKey(Project, related_name='videos', on_delete=models.CASCADE)
@@ -144,36 +156,52 @@ class Property(AbstractBaseModel):
 
     HEATING_OPTIONS = [
         ('none', 'None'),
-        ('gas', 'Gas'),
-        ('electric', 'Electric'),
-        ('oil', 'Oil'),
-        ('none', 'None'),
+        ('heating stoves', 'Heating Stoves'),
+        ('natural gas stove', 'Natural Gas Stove'),
+        ('room heater', 'Room Heater'),
+        ('central heating', 'Central Heating'),
+        ('central heating (share meter)', 'Central Heating (Share Meter)'),
+        ('central heating boiler (electric)', 'Central Heating Boiler (Electric)'),
+        ('central heating boilers (natural gas)', 'Central Heating Boilers (Natural Gas)'),
+        ('floor heating', 'Floor Heating'),
+        ('air conditioning', 'Air Conditioning'),
+        ('fan coil unit', 'Fan Coil Unit'),
+        ('solar energy', 'Solar Energy'),
+        ('elektrikli radyator', 'Elektrikli Radyator'),
     ]
 
-    name = models.CharField(max_length=100)
-    description = models.TextField()
+    #Relations
+    category = models.ForeignKey('PropertyCategory', related_name='properties', on_delete=models.CASCADE)
     project = models.ForeignKey('Project', related_name='properties', on_delete=models.CASCADE)
-    category = models.ForeignKey('Category', related_name='categories', on_delete=models.CASCADE)
-    latitude = models.FloatField(null=True, blank=True)
-    longitude = models.FloatField(null=True, blank=True)
+    #STR fields
+    name = models.CharField(max_length=100)
+    purpose = models.CharField(max_length = 255)
+    heating_option = models.CharField(max_length=50, choices=HEATING_OPTIONS, default='none')
+    description = models.TextField()
+    #Decimals
+    latitude = models.FloatField(null=True, blank=True, default=1.45648)
+    longitude = models.FloatField(null=True, blank=True, default=1.45648)
     price_per_nft = models.DecimalField(max_digits=10, decimal_places=2)
     area = models.DecimalField(max_digits=10, decimal_places=2)
-    bedrooms = models.IntegerField()
-    bathrooms = models.IntegerField()
-    purpose = models.CharField(max_length = 255)
-    furnished = models.BooleanField()
+    average_rating = models.DecimalField(max_digits=2, decimal_places=1, default=5.0, validators=[MinValueValidator(0), MaxValueValidator(5)])
+    offer = models.DecimalField(max_digits=5, decimal_places=2, validators=[MinValueValidator(0), MaxValueValidator(100)], null=True, blank=True, default=0)
+    #Integers
+    bedrooms = models.IntegerField(default=0)
+    bathrooms = models.IntegerField(default=0)
+    tub_count = models.IntegerField(default=0)
+    pool_count = models.IntegerField(default=0)
     parking_space_count = models.IntegerField()
     master_count = models.IntegerField()
-    heating_option = models.CharField(max_length=50, choices=HEATING_OPTIONS, default='none')
+    floor = models.IntegerField(null=True, blank=True, default=1)
+    likes = models.IntegerField(default=0)
+    unit_number = models.IntegerField(null=True, blank=True, default=1)
+    #Boolians
+    furnished = models.BooleanField(default=False)
     has_maid_room = models.BooleanField()
     has_swimming_pool = models.BooleanField()
     has_steam_room = models.BooleanField()
-    average_rating = models.DecimalField(max_digits=2, decimal_places=1, default=5.0, validators=[MinValueValidator(0), MaxValueValidator(5)])
+    #Image
     cover_img = models.ImageField(upload_to = "property_cover_images/", null = True, blank = True)
-    floor = models.IntegerField(null=True, blank=True)
-    unit_number = models.IntegerField(null=True, blank=True)
-    likes = models.IntegerField(default=0)
-    offer = models.DecimalField(max_digits=5, decimal_places=2, validators=[MinValueValidator(0), MaxValueValidator(100)], null=True, blank=True, default=0)
 
     @property
     def effective_price(self):
@@ -184,21 +212,35 @@ class Property(AbstractBaseModel):
 
     @property
     def country(self):
-        return self.project.city.country.name
+        return self.project.neighborhood.city.country.name
 
     @property
     def city(self):
-        return self.project.city.name
+        return self.project.neighborhood.city.name
 
     def __str__(self):
         return self.name
     
 class PropertyImage(AbstractBaseModel):
     property = models.ForeignKey('Property', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='Property_images/', null = True, blank = True)
+    image = models.ImageField(upload_to='Property_images/')
 
     def __str__(self):
         return self.property.project.title + ' Image'
+    
+class PropertyBuildingPlan(AbstractBaseModel):
+    property = models.ForeignKey('Property', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='property_plan_images/') 
+
+    def __str__(self):
+        return self.property.project.title + ' building plan'
+    
+class PropertyOutwardView(AbstractBaseModel):
+    property = models.ForeignKey('Property', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='property_outward_images/') 
+
+    def __str__(self):
+        return self.property.project.title + ' outward view'
     
 class PropertyVideo(models.Model):
     property = models.ForeignKey(Property, related_name='videos', on_delete=models.CASCADE)
@@ -216,16 +258,20 @@ class PropertyLike(models.Model):
 
     class Meta:
         unique_together = ('user', 'property')
+
+class PropertyCategory(models.Model):
+    CATEGORY_CHOICES = [
+        ('home', 'Home'),
+        ('apartment', 'Apartment'),
+        ('villas', 'Villas'),
+        ('penthouse', 'Penthouse'),
+        ('super luxury', 'Super Luxury'),
+    ]
     
-class Category(AbstractBaseModel):
-    title = models.CharField(max_length=100)
-    category_icon = models.ImageField(upload_to="category_images/", null=True, blank=True)
+    name = models.CharField(max_length=50, choices=CATEGORY_CHOICES, unique=True)
 
-    def __str__(self) -> str:
-        if len(self.title) > 50:
-            return self.title[:50] + "..."
-        return self.title
-
+    def __str__(self):
+        return self.get_name_display()
 
 class Banner(AbstractBaseModel):
     title = models.TextField()

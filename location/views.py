@@ -1,17 +1,19 @@
 from core.views import LocationBaseModelViewSet
-from .models import Country, City, Project, Property, Banner, Category, PropertyLike
+from .models import Country, City, Project, Property, Banner, PropertyLike, Neighborhood, PropertyCategory
 from .serializers import (
     CountrySerializer, CitySerializer,
     ProjectSerializer, PropertySerializer,
-    BannerSerializer, CategorySerializer)
+    BannerSerializer, PropertyCategorySerializer,
+    NeighborhoodSerializer)
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from core.utils import get_current_url
 from rest_framework.views import APIView
-from .filters import PropertyFilter
+from .filters import PropertyFilter, ProjectFilter, CityFilter
 from django_filters import rest_framework as filters
 from django.shortcuts import get_object_or_404
+from django.db.models import Q
 
 class CountryViewSet(LocationBaseModelViewSet):
     model = Country
@@ -20,6 +22,8 @@ class CountryViewSet(LocationBaseModelViewSet):
 class CityViewSet(LocationBaseModelViewSet):
     model = City
     serializer_class = CitySerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = CityFilter
 
     def list(self, request, *args, **kwargs):
         country_id = request.GET.get("country_id", None)
@@ -27,23 +31,85 @@ class CityViewSet(LocationBaseModelViewSet):
             url = get_current_url(request)
             queryset = City.objects.filter(country=country_id)
             serializer = CitySerializer(instance=queryset, many=True, context={'url' : url})
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.data)
+        else:
+            return super().list(request, *args, **kwargs)
+        
+    @action(detail=False, methods=['get'])
+    def search(self, request):
+        filtered_qs = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(filtered_qs)
+        url = get_current_url(request)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True, context={'url': url})
+            return self.get_paginated_response(serializer.data)
+        
+        serializer = self.get_serializer(filtered_qs, many=True, context={'url': url})
+        return serializer.data
+
+class NeighborhoodViewSet(LocationBaseModelViewSet):
+    model = Neighborhood
+    serializer_class = NeighborhoodSerializer
+
+    def list(self, request, *args, **kwargs):
+        city_id = request.GET.get("city_id", None)
+        if city_id is not None:
+            url = get_current_url(request)
+            queryset = Neighborhood.objects.filter(city=city_id)
+            serializer = NeighborhoodSerializer(instance=queryset, many=True, context={'url' : url})
+            return Response(serializer.data)
         else:
             return super().list(request, *args, **kwargs)
 
 class ProjectViewSet(LocationBaseModelViewSet):
     model = Project
     serializer_class = ProjectSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    filterset_class = ProjectFilter
 
     def list(self, request, *args, **kwargs):
+        neighborhood_id = request.GET.get("neighborhood_id", None)
         city_id = request.GET.get("city_id", None)
+        country_id = request.GET.get("country_id", None)
+
+        url = get_current_url(request)
+        queryset = Project.objects.all()
+
+        if neighborhood_id is not None:
+            queryset = queryset.filter(neighborhood=neighborhood_id)
         if city_id is not None:
-            url = get_current_url(request)
-            queryset = Project.objects.filter(city=city_id)
-            serializer = ProjectSerializer(instance=queryset, many=True, context={'url' : url})
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        else:
-            return super().list(request, *args, **kwargs)
+            queryset = queryset.filter(city=city_id)
+        if country_id is not None:
+            queryset = queryset.filter(city__country=country_id)
+
+        serializer = ProjectSerializer(instance=queryset, many=True, context={'url': url})
+        return Response(serializer.data) 
+        
+    @action(detail=False, methods=['get'])
+    def search(self, request):
+        filtered_qs = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(filtered_qs)
+        url = get_current_url(request)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True, context={'url': url})
+            return self.get_paginated_response(serializer.data)
+        
+        serializer = self.get_serializer(filtered_qs, many=True, context={'url': url})
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'])
+    def projects_with_offer(self, request, country_id=None):
+        url = get_current_url(request)
+        if country_id is not None:
+            projects_with_offer = Project.objects.filter(
+                Q(city__country_id=country_id) & (Q(offer__gt=0) | Q(properties__offer__gt=0))
+            ).distinct()
+        else :
+            projects_with_offer = projects_with_offer = Project.objects.filter( 
+                Q(offer__gt=0) | Q(properties__offer__gt=0)
+            ).distinct()
+        serializer = self.get_serializer(projects_with_offer, many=True, context={'url': url})
+        return Response(serializer.data)
 
 class PropertyViewSet(LocationBaseModelViewSet):
     model = Property
@@ -72,32 +138,31 @@ class PropertyViewSet(LocationBaseModelViewSet):
         
         serializer = self.get_serializer(filtered_qs, many=True, context={'url': url})
         return Response(serializer.data)
-
+    
     @action(detail=False, methods=['get'])
-    def properties_with_offer(self, request, country_id=None):
-        url = get_current_url(request)
-        if country_id is not None:
-            properties_with_offer = Property.objects.filter(
-            project__city__country_id=country_id,
-            offer__gt=0
-            )
-        else :
-            properties_with_offer = Property.objects.filter(offer__gt=0)
-        serializer = self.get_serializer(properties_with_offer, many=True, context={'url': url})
-        return Response(serializer.data)
+    def properties_with_category(self, request):
+        category_id = request.GET.get("category_id", None)
+        if category_id is not None:
+            url = get_current_url(request)
+            queryset = Property.objects.filter(category = category_id)
+            serializer = PropertySerializer(queryset, many=True, context={'url': url})
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({"detail": "Category not selected."}, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 class BannerListView(APIView):
     def get(self, request):
         banners_queryset = Banner.objects.all()
         serializer = BannerSerializer(banners_queryset, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data) 
 
-class CategoryListView(APIView):
+class PropertyCategoryListView(APIView):
     def get(self, request):
-        categories = Category.objects.all()
-        serializer = CategorySerializer(categories, many=True)
+        queryset = PropertyCategory.objects.all()
+        serializer = PropertyCategorySerializer(queryset, many=True)
         return Response(serializer.data)
-    
 
 class PropertyLikeView(APIView):
     permission_classes = [permissions.IsAuthenticated]
