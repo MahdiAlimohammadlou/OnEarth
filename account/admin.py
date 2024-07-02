@@ -3,7 +3,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group
 
 from .forms import UserCreationForm, UserChangeForm
-from .models import User, BuyerPersonalInfo, SellerPersonalInfo, AgentInfo, Ticket
+from .models import User, BuyerPersonalInfo, SellerPersonalInfo, AgentInfo, Ticket, Device, ReferralCode
 
 
 # Register your models here.
@@ -30,26 +30,46 @@ class UserAdmin(BaseUserAdmin):
     ordering = ("email",)
     filter_horizontal = ()
 
+class CommonFieldsAdmin(admin.ModelAdmin):
+    list_display = ('full_name', 'postal_address', 'marital_status', 'elec_bill_approval_status', 'birth_certificate_approval_status', 'id_or_driver_license_approval_status')
+    list_filter = ('basic_info_approval_status', 'marital_status', 'elec_bill_approval_status', 'birth_certificate_approval_status', 'id_or_driver_license_approval_status', 'approval_status')
+    search_fields = ('full_name', 'postal_address')
+
+class AgentInfoAdmin(CommonFieldsAdmin):
+    list_display = CommonFieldsAdmin.list_display + ('company_name', 'company_address', 'company_email', 'company_phone_number', 'business_card_approval_status', 'id_card_approval_status')
+    list_filter = ('basic_info_approval_status', 'business_card_approval_status', 'id_card_approval_status', 'approval_status')
+    search_fields = CommonFieldsAdmin.search_fields + ('company_name', 'company_address', 'company_email')
+
+class BuyerPersonalInfoAdmin(CommonFieldsAdmin):
+    list_display = CommonFieldsAdmin.list_display + ('buyer_agreement', 'buyer_user')
+    search_fields = CommonFieldsAdmin.search_fields + ('buyer_user__username', 'buyer_user__email')
+
+class SellerPersonalInfoAdmin(CommonFieldsAdmin):
+    list_display = CommonFieldsAdmin.list_display + ('seller_agreement', 'seller_user')
+    search_fields = CommonFieldsAdmin.search_fields + ('seller_user__username', 'seller_user__email')
+
 class TicketAdmin(admin.ModelAdmin):
-    list_display = ('subject', 'user', 'assigned_user', 'status', 'department', 'created_at', 'updated_at')
-    list_filter = ('status', 'created_at', 'updated_at', 'department')
-    search_fields = ('subject', 'user__email', 'assigned_user__email', 'department')
+    list_display = ('user', 'assigned_user', 'subject', 'status', 'department')
+    list_filter = ('status', 'department', 'subject')
+    search_fields = ('user__username', 'user__email', 'assigned_user__username', 'assigned_user__email')
+    raw_id_fields = ('user', 'assigned_user')
 
-# class AgentInfoAdmin(admin.ModelAdmin):
-#     list_display = ['company_name', 'company_address', 'company_email', 'company_phone_number', 'approval_status']
-#     list_filter = ['approval_status']
+class ReferralCodeAdmin(admin.ModelAdmin):
+    list_display = ('code', 'agent')
+    search_fields = ('code', 'agent__username', 'agent__email')
+    raw_id_fields = ('agent',)
 
-# class BuyerPersonalInfoAdmin(admin.ModelAdmin):
-#     list_display = [ 'buyer_user', 'approval_status']
-#     list_filter = ['approval_status']
+class DeviceAdmin(admin.ModelAdmin):
+    list_display = ('user', 'device_info', 'is_token_expired')
+    search_fields = ('user__username', 'user__email', 'device_info')
+    raw_id_fields = ('user',)
 
-# class SellerPersonalInfoAdmin(admin.ModelAdmin):
-#     list_display = [ 'seller_user', 'approval_status']
-#     list_filter = ['approval_status']
-
+admin.site.register(AgentInfo, AgentInfoAdmin)
+admin.site.register(BuyerPersonalInfo, BuyerPersonalInfoAdmin)
+admin.site.register(SellerPersonalInfo, SellerPersonalInfoAdmin)
 admin.site.register(Ticket, TicketAdmin)
+# admin.site.register(ReferralCode, ReferralCodeAdmin)
+# admin.site.register(Device, DeviceAdmin)
 admin.site.register(User, UserAdmin)
-admin.site.register(BuyerPersonalInfo)
-admin.site.register(SellerPersonalInfo)
-admin.site.register(AgentInfo)
+
 
