@@ -36,7 +36,7 @@ class CommonFieldsAdmin(admin.ModelAdmin):
     search_fields = ('full_name', 'postal_address')
 
 class AgentInfoAdmin(CommonFieldsAdmin):
-    list_display = CommonFieldsAdmin.list_display + ('company_name', 'company_address', 'company_email', 'company_phone_number', 'business_card_approval_status', 'id_card_approval_status')
+    list_display = ('company_name', 'company_address', 'company_email', 'company_phone_number', 'business_card_approval_status', 'id_card_approval_status')
     list_filter = ('basic_info_approval_status', 'business_card_approval_status', 'id_card_approval_status', 'approval_status')
     search_fields = CommonFieldsAdmin.search_fields + ('company_name', 'company_address', 'company_email')
 
