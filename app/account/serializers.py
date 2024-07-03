@@ -32,9 +32,9 @@ class CreateOrUpdateAgentInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = AgentInfo
         fields = [
-            'id', 'company_name', 'company_address', 
+            'id', 'full_name', 'company_name', 'company_address', 
             'company_email', 'company_phone_number', 'biometric', 
-            'business_card', 'id_card', 'passport'
+            'id_card_or_passport', 'birth_certificate', 'aggrement'
         ]
 
     def update(self, instance, validated_data):
@@ -46,25 +46,25 @@ class AgentInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = AgentInfo
         fields = [
-            'id', 'company_name', 'company_address', 
+            'id', 'full_name', 'company_name', 'company_address', 
             'company_email', 'company_phone_number', 'biometric', 
-            'business_card', 'id_card', 'passport' , 
-            'basic_approval_status', 'approval_status',
-            'passport_approval_status', 'biometric_approval_status',
-            'business_card_approval_status', 'id_card_approval_status',
+            'id_card_or_passport', 'birth_certificate', 'aggrement',
+            'biometric_approval_status', 'approval_status',
+            'birth_certificate_approval_status', 'aggrement_approval_status',
+            'id_card_or_passport_approval_status'
         ]
 
 class CreateOrUpdateBuyerPersonalInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = BuyerPersonalInfo
         fields = [
-            'id', 'biometric', 'full_name', 'postal_address',
-            'marital_status', 'marriage_contract', 'elec_bill', 'passport',
-            'birth_certificate', 'id_or_driver_license', 'buyer_agreement',
+            'id', 'full_name', 'postal_address', 'marital_status',
+            'marriage_contract', 'biometric', 'id_or_driver_license', 
+            'passport', 'birth_certificate', 'aggrement'
         ]
 
     def update(self, instance, validated_data):
-        if instance.approval_status == "Approved":
+        if instance.basic_info_approval_status == "Approved":
             raise ValidationError('Cannot update approved information.')
         return super().update(instance, validated_data)
 
@@ -72,26 +72,25 @@ class BuyerPersonalInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = BuyerPersonalInfo
         fields = [
-            'id', 'biometric', 'full_name', 'postal_address',
-            'marital_status', 'marriage_contract', 'elec_bill', 'passport',
-            'birth_certificate', 'id_or_driver_license', 'buyer_agreement',
-            'basic_approval_status', 'approval_status',
+            'id', 'full_name', 'postal_address', 'marital_status',
+            'marriage_contract', 'biometric', 'id_or_driver_license', 
+            'passport', 'birth_certificate', 'aggrement',
+            'basic_info_approval_status', 'id_or_driver_license_approval_status',
             'passport_approval_status', 'biometric_approval_status',
-            'elec_bill_approval_status', 'birth_certificate_approval_status', 'id_or_driver_license_approval_status',
+            'birth_certificate_status', 'aggrement_approval_status'
         ]
 
 class CreateOrUpdateSellerPersonalInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = SellerPersonalInfo
         fields = [
-            'id', 'biometric', 'full_name', 'postal_address',
-            'marital_status', 'marriage_contract', 'elec_bill',
-            'birth_certificate', 'id_or_driver_license',
-            'passport', 'seller_agreement'
+            'id', 'full_name', 'postal_address', 'marital_status',
+            'marriage_contract', 'biometric', 'id_or_driver_license', 
+            'passport', 'birth_certificate', 'background', 'aggrement'
         ]
 
     def update(self, instance, validated_data):
-        if instance.approval_status == "Approved":
+        if instance.basic_info_approval_status == "Approved":
             raise ValidationError('Cannot update approved information.')
         return super().update(instance, validated_data)
 
@@ -99,14 +98,14 @@ class SellerPersonalInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = SellerPersonalInfo
         fields = [
-            'id', 'biometric', 'full_name', 'postal_address',
-            'marital_status', 'marriage_contract', 'elec_bill',
-            'birth_certificate', 'id_or_driver_license',
-            'passport', 'seller_agreement',
-            'basic_approval_status', 'approval_status',
+            'id', 'full_name', 'postal_address', 'marital_status',
+            'marriage_contract', 'biometric', 'id_or_driver_license', 
+            'passport', 'birth_certificate', 'background', 'aggrement',
+            'basic_info_approval_status', 'id_or_driver_license_approval_status',
             'passport_approval_status', 'biometric_approval_status',
-            'elec_bill_approval_status', 'birth_certificate_approval_status', 'id_or_driver_license_approval_status',
+            'birth_certificate_status', 'background_status', 'aggrement_approval_status'
         ]
+
 
 class TicketSerializer(serializers.ModelSerializer):
     class Meta:
