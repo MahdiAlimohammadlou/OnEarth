@@ -1,4 +1,5 @@
 from PIL import Image
+from django.db import models
 
 def get_current_url(request):
     return request.scheme + "://" + request.get_host()
@@ -25,3 +26,16 @@ class ImageCompressionClass:
                 return
             img = img.resize(output_size, Image.Resampling.LANCZOS)
             img.save(image_path)
+
+def compress_model_images(instance) -> None:
+    """
+    Compress images for a given model instance.
+    """
+    for field in instance._meta.get_fields():
+        if isinstance(field, models.ImageField):
+            image_field = getattr(instance, field.name)
+            if image_field and image_field.path:
+                try:
+                    ImageCompressionClass.reduce_image_size(image_field.path)
+                except FileNotFoundError:
+                    print(f"File {image_field.path} not found. Skipping resize.")

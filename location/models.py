@@ -4,7 +4,6 @@ from core.models import AbstractBaseModel
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import Min, Max
 from account.models import User
-from core.utils import ImageCompressionClass
 
 class Country(AbstractBaseModel):
     name = models.CharField(max_length=100)
@@ -14,17 +13,6 @@ class Country(AbstractBaseModel):
 
     def __str__(self):
         return self.name
-    
-    def save(self, *args, **kwargs) -> None:
-        super().save(*args, **kwargs) 
-        for field in self._meta.get_fields():
-            if isinstance(field, models.ImageField):
-                image_field = getattr(self, field.name)
-                if image_field and image_field.path:
-                    try:
-                        ImageCompressionClass.reduce_image_size(image_field.path)
-                    except FileNotFoundError:
-                        print(f"File {image_field.path} not found. Skipping resize.")
     
 class City(AbstractBaseModel):
     name = models.CharField(max_length=100)
