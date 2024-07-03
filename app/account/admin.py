@@ -30,23 +30,23 @@ class UserAdmin(BaseUserAdmin):
     ordering = ("email",)
     filter_horizontal = ()
 
-class CommonFieldsAdmin(admin.ModelAdmin):
-    list_display = ('full_name', 'postal_address', 'marital_status', 'elec_bill_approval_status', 'birth_certificate_approval_status', 'id_or_driver_license_approval_status')
-    list_filter = ('basic_info_approval_status', 'marital_status', 'elec_bill_approval_status', 'birth_certificate_approval_status', 'id_or_driver_license_approval_status', 'approval_status')
+class AgentInfoAdmin(admin.ModelAdmin):
+    list_display = ('full_name', 'company_name', 'company_email', 'biometric_approval_status', 'approval_status')
+    search_fields = ('full_name', 'company_name', 'company_email')
+    list_filter = ('biometric_approval_status', 'approval_status')
+    readonly_fields = ('biometric_approval_status', 'approval_status')
+
+class BuyerPersonalInfoAdmin(admin.ModelAdmin):
+    list_display = ('full_name', 'postal_address', 'marital_status', 'basic_info_approval_status', 'id_or_driver_license_approval_status', 'passport_approval_status', 'birth_certificate_status', 'aggrement_approval_status')
     search_fields = ('full_name', 'postal_address')
+    list_filter = ('marital_status', 'basic_info_approval_status', 'id_or_driver_license_approval_status', 'passport_approval_status', 'birth_certificate_status', 'aggrement_approval_status')
+    readonly_fields = ('basic_info_approval_status', 'id_or_driver_license_approval_status', 'passport_approval_status', 'birth_certificate_status', 'aggrement_approval_status')
 
-class AgentInfoAdmin(CommonFieldsAdmin):
-    list_display = ('company_name', 'company_address', 'company_email', 'company_phone_number', 'business_card_approval_status', 'id_card_approval_status')
-    list_filter = ('basic_info_approval_status', 'business_card_approval_status', 'id_card_approval_status', 'approval_status')
-    search_fields = CommonFieldsAdmin.search_fields + ('company_name', 'company_address', 'company_email')
-
-class BuyerPersonalInfoAdmin(CommonFieldsAdmin):
-    list_display = CommonFieldsAdmin.list_display + ('buyer_agreement', 'buyer_user')
-    search_fields = CommonFieldsAdmin.search_fields + ('buyer_user__username', 'buyer_user__email')
-
-class SellerPersonalInfoAdmin(CommonFieldsAdmin):
-    list_display = CommonFieldsAdmin.list_display + ('seller_agreement', 'seller_user')
-    search_fields = CommonFieldsAdmin.search_fields + ('seller_user__username', 'seller_user__email')
+class SellerPersonalInfoAdmin(admin.ModelAdmin):
+    list_display = ('full_name', 'postal_address', 'marital_status', 'background_status', 'basic_info_approval_status', 'id_or_driver_license_approval_status', 'passport_approval_status', 'birth_certificate_status', 'aggrement_approval_status')
+    search_fields = ('full_name', 'postal_address')
+    list_filter = ('marital_status', 'background_status', 'basic_info_approval_status', 'id_or_driver_license_approval_status', 'passport_approval_status', 'birth_certificate_status', 'aggrement_approval_status')
+    readonly_fields = ('background_status', 'basic_info_approval_status', 'id_or_driver_license_approval_status', 'passport_approval_status', 'birth_certificate_status', 'aggrement_approval_status')
 
 class TicketAdmin(admin.ModelAdmin):
     list_display = ('user', 'assigned_user', 'subject', 'status', 'department')
