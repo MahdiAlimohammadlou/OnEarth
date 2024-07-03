@@ -54,8 +54,8 @@ Thumbs.db
 .nox/
 
 # Docker files
-docker-compose.yml
-docker-compose.override.yml
+# docker-compose.yml
+# docker-compose.override.yml
 
 # Ignored by Git itself
 .git/
