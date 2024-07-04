@@ -81,14 +81,13 @@ class PropertySerializer(BaseSerializer):
     
     class Meta:
         model = Property
-        fields = ['id', 'name', 'project', 'project_title', 'latitude',
+        fields = ['id', 'name', 'project', 'category', 'project_title', 'latitude',
                     'longitude', 'description', 'price_per_nft', 'offer', 'effective_price',
                     'area', 'bedrooms', 'bathrooms', 'purpose', 'parking_space_count', 'has_maid_room',
                     'has_swimming_pool','has_steam_room', 'average_rating',
                     'cover_img_full_url', 'country', 'city', 'master_count',
-                    'heating_option', 'floor', 'unit_number', 'videos', 'images',
-                    'shipping_info', 'plans', 'outward_views',
-                    'tub_count', 'pool_count',
+                    'heating_option', 'floor', 'unit_number', 'tub_count', 'pool_count', 'living_room_count',
+                    'shipping_info', 'plans', 'outward_views', 'videos', 'images',
                     #   'nfts'
                        ]
         
