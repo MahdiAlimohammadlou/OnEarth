@@ -153,6 +153,11 @@ class ProjectVideo(models.Model):
 
 class Property(AbstractBaseModel):
 
+    TYPES = [
+        ('studio', 'Studio'),
+        ('duplex', 'Duplex'),
+    ]
+
     HEATING_OPTIONS = [
         ('none', 'None'),
         ('heating stoves', 'Heating Stoves'),
@@ -177,6 +182,7 @@ class Property(AbstractBaseModel):
     purpose = models.CharField(max_length = 255)
     heating_option = models.CharField(max_length=50, choices=HEATING_OPTIONS, default='none')
     description = models.TextField()
+    property_type = models.CharField(max_length=50, choices=TYPES, default='studio', null=True, blank=True)
     #Decimals
     latitude = models.FloatField(null=True, blank=True, default=1.45648)
     longitude = models.FloatField(null=True, blank=True, default=1.45648)
@@ -189,11 +195,12 @@ class Property(AbstractBaseModel):
     bathrooms = models.IntegerField(default=0)
     tub_count = models.IntegerField(default=0)
     pool_count = models.IntegerField(default=0)
-    parking_space_count = models.IntegerField()
+    parking_space_count = models.IntegerField(default=1)
     master_count = models.IntegerField()
     floor = models.IntegerField(null=True, blank=True, default=1)
     likes = models.IntegerField(default=0)
     unit_number = models.IntegerField(null=True, blank=True, default=1)
+    living_room_count = models.IntegerField(null=True, blank=True, default=1)
     #Boolians
     furnished = models.BooleanField(default=False)
     has_maid_room = models.BooleanField()

@@ -16,6 +16,8 @@ class PropertyFilter(filters.FilterSet):
     furnished = filters.BooleanFilter(field_name='furnished')
     has_image = filters.BooleanFilter(method='filter_has_image')
     has_video = filters.BooleanFilter(method='filter_has_video')
+    category = filters.NumberFilter(field_name='category')
+    floor = filters.NumberFilter(field_name='floor')
     search = filters.CharFilter(method='filter_search')
 
     def filter_has_image(self, queryset, name, value):
