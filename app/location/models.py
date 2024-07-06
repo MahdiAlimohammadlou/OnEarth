@@ -153,11 +153,6 @@ class ProjectVideo(models.Model):
 
 class Property(AbstractBaseModel):
 
-    TYPES = [
-        ('studio', 'Studio'),
-        ('duplex', 'Duplex'),
-    ]
-
     HEATING_OPTIONS = [
         ('none', 'None'),
         ('heating stoves', 'Heating Stoves'),
@@ -182,7 +177,6 @@ class Property(AbstractBaseModel):
     purpose = models.CharField(max_length = 255)
     heating_option = models.CharField(max_length=50, choices=HEATING_OPTIONS, default='none')
     description = models.TextField()
-    property_type = models.CharField(max_length=50, choices=TYPES, default='studio', null=True, blank=True)
     #Decimals
     latitude = models.FloatField(null=True, blank=True, default=1.45648)
     longitude = models.FloatField(null=True, blank=True, default=1.45648)
@@ -206,6 +200,12 @@ class Property(AbstractBaseModel):
     has_maid_room = models.BooleanField()
     has_swimming_pool = models.BooleanField()
     has_steam_room = models.BooleanField()
+    has_living_room = models.BooleanField(default=False)
+    has_dining_room = models.BooleanField(default=False)
+    has_kitchen = models.BooleanField(default=False)
+    has_bedroom = models.BooleanField(default=False)
+    has_bathroom = models.BooleanField(default=False)
+    has_balcony = models.BooleanField(default=False)
     #Image
     cover_img = models.ImageField(upload_to = "property_cover_images/", null = True, blank = True)
 
@@ -267,13 +267,10 @@ class PropertyLike(models.Model):
 
 class PropertyCategory(models.Model):
     CATEGORY_CHOICES = [
-        ('home', 'Home'),
-        ('apartment', 'Apartment'),
-        ('villas', 'Villas'),
-        ('penthouse', 'Penthouse'),
-        ('super luxury', 'Super Luxury'),
+    ('Duplex', 'Duplex'),
+    ('Studio', 'Studio'),
     ]
-    
+
     name = models.CharField(max_length=50, choices=CATEGORY_CHOICES, unique=True)
 
     def __str__(self):

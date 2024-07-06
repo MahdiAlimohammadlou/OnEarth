@@ -87,6 +87,7 @@ class PropertySerializer(BaseSerializer):
                     'has_swimming_pool','has_steam_room', 'average_rating',
                     'cover_img_full_url', 'country', 'city', 'master_count',
                     'heating_option', 'floor', 'unit_number', 'tub_count', 'pool_count', 'living_room_count',
+                    'has_living_room', 'has_dining_room', 'has_kitchen', 'has_bedroom', 'has_bathroom', 'has_balcony',
                     'shipping_info', 'plans', 'outward_views', 'videos', 'images',
                     #   'nfts'
                        ]
