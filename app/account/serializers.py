@@ -34,7 +34,8 @@ class CreateOrUpdateAgentInfoSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'full_name', 'company_name', 'company_address', 
             'company_email', 'company_phone_number', 'biometric', 
-            'id_card_or_passport', 'birth_certificate', 'aggrement'
+            'id_card_or_passport', 'birth_certificate', 'aggrement',
+            'business_card'
         ]
 
     def update(self, instance, validated_data):
@@ -51,7 +52,7 @@ class AgentInfoSerializer(serializers.ModelSerializer):
             'id_card_or_passport', 'birth_certificate', 'aggrement',
             'biometric_approval_status', 'approval_status',
             'birth_certificate_approval_status', 'aggrement_approval_status',
-            'id_card_or_passport_approval_status'
+            'id_card_or_passport_approval_status', 'business_card'
         ]
 
 class CreateOrUpdateBuyerPersonalInfoSerializer(serializers.ModelSerializer):
@@ -60,7 +61,7 @@ class CreateOrUpdateBuyerPersonalInfoSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'full_name', 'postal_address', 'marital_status',
             'marriage_contract', 'biometric', 'id_or_driver_license', 
-            'passport', 'birth_certificate', 'aggrement'
+            'passport', 'birth_certificate', 'aggrement', 'elec_bill'
         ]
 
     def update(self, instance, validated_data):
@@ -77,7 +78,7 @@ class BuyerPersonalInfoSerializer(serializers.ModelSerializer):
             'passport', 'birth_certificate', 'aggrement',
             'basic_info_approval_status', 'id_or_driver_license_approval_status',
             'passport_approval_status', 'biometric_approval_status',
-            'birth_certificate_status', 'aggrement_approval_status'
+            'birth_certificate_status', 'aggrement_approval_status', 'elec_bill'
         ]
 
 class CreateOrUpdateSellerPersonalInfoSerializer(serializers.ModelSerializer):
@@ -86,7 +87,8 @@ class CreateOrUpdateSellerPersonalInfoSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'full_name', 'postal_address', 'marital_status',
             'marriage_contract', 'biometric', 'id_or_driver_license', 
-            'passport', 'birth_certificate', 'background', 'aggrement'
+            'passport', 'birth_certificate', 'background', 'aggrement',
+            'elec_bill'
         ]
 
     def update(self, instance, validated_data):
@@ -103,7 +105,8 @@ class SellerPersonalInfoSerializer(serializers.ModelSerializer):
             'passport', 'birth_certificate', 'background', 'aggrement',
             'basic_info_approval_status', 'id_or_driver_license_approval_status',
             'passport_approval_status', 'biometric_approval_status',
-            'birth_certificate_status', 'background_status', 'aggrement_approval_status'
+            'birth_certificate_status', 'background_status', 'aggrement_approval_status',
+            'elec_bill'
         ]
 
 
