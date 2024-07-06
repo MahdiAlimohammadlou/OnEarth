@@ -37,7 +37,6 @@ class CityViewSet(LocationBaseModelViewSet):
     def search(self, request):
         filtered_qs = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(filtered_qs)
-        url = get_current_url(request)
         if page is not None:
             serializer = self.get_serializer(page, many=True, context={'request': request})
             return self.get_paginated_response(serializer.data)
@@ -52,7 +51,6 @@ class NeighborhoodViewSet(LocationBaseModelViewSet):
     def list(self, request, *args, **kwargs):
         city_id = request.GET.get("city_id", None)
         if city_id is not None:
-            url = get_current_url(request)
             queryset = Neighborhood.objects.filter(city=city_id)
             serializer = NeighborhoodSerializer(instance=queryset, many=True, context={'request' : request})
             return Response(serializer.data)
@@ -69,8 +67,6 @@ class ProjectViewSet(LocationBaseModelViewSet):
         neighborhood_id = request.GET.get("neighborhood_id", None)
         city_id = request.GET.get("city_id", None)
         country_id = request.GET.get("country_id", None)
-
-        url = get_current_url(request)
         queryset = Project.objects.all()
 
         if neighborhood_id is not None:
