@@ -1,7 +1,10 @@
 from django.contrib import admin
 from .models import (
-    Country, City, Neighborhood, Project, ProjectImage, ProjectBuildingPlan, ProjectVideo, Property,
-    PropertyImage, PropertyBuildingPlan, PropertyOutwardView, PropertyVideo, PropertyLike, PropertyCategory, Banner
+    Country, City, Neighborhood, Project, ProjectImage,
+    ProjectBuildingPlan, ProjectVideo, Property,
+    PropertyImage, PropertyBuildingPlan, PropertyOutwardView,
+    PropertyVideo, PropertyLike, PropertyCategory, Banner,
+    LocationFeature
 )
 
 class CountryAdmin(admin.ModelAdmin):
@@ -62,6 +65,10 @@ class BannerAdmin(admin.ModelAdmin):
     list_display = ('title',)
     search_fields = ('title',)
 
+class LocationFeatureAdmin(admin.ModelAdmin):
+    list_display = ('feature_name', 'feature_time_in_minutes', 'project')
+    search_fields = ('feature_name', 'project')
+
 admin.site.register(Country, CountryAdmin)
 admin.site.register(City, CityAdmin)
 admin.site.register(Neighborhood, NeighborhoodAdmin)
@@ -77,3 +84,4 @@ admin.site.register(PropertyVideo, PropertyVideoAdmin)
 admin.site.register(PropertyLike, PropertyLikeAdmin)
 admin.site.register(PropertyCategory, PropertyCategoryAdmin)
 admin.site.register(Banner, BannerAdmin)
+admin.site.register(LocationFeature, LocationFeatureAdmin)
