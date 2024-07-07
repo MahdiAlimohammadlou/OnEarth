@@ -66,6 +66,7 @@ class Project(AbstractBaseModel):
     latitude = models.FloatField(null=True, blank=True, default=1.45648)
     longitude = models.FloatField(null=True, blank=True, default=1.45648)
     offer = models.DecimalField(max_digits=5, decimal_places=2, validators=[MinValueValidator(0), MaxValueValidator(100)], null=True, blank=True, default=0)
+    floor_count = models.IntegerField(default=2)
     #Image fields
     cover_img = models.ImageField(upload_to = "project_cover_images/", null = True, blank = True)
     #Boolean fields
@@ -195,7 +196,7 @@ class Property(AbstractBaseModel):
     likes = models.IntegerField(default=0)
     unit_number = models.IntegerField(null=True, blank=True, default=1)
     living_room_count = models.IntegerField(null=True, blank=True, default=1)
-    #Boolians
+    #Booleans
     furnished = models.BooleanField(default=False)
     has_maid_room = models.BooleanField()
     has_swimming_pool = models.BooleanField()
