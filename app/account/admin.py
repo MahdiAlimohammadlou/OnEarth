@@ -3,7 +3,8 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group
 
 from .forms import UserCreationForm, UserChangeForm
-from .models import User, BuyerPersonalInfo, SellerPersonalInfo, AgentInfo, Ticket, Device, ReferralCode
+from .models import (User, BuyerPersonalInfo, SellerPersonalInfo,
+                      AgentInfo, Ticket, Device, ReferralCode,)
 
 
 # Register your models here.

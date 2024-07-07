@@ -4,7 +4,7 @@ from .models import (Country, City, Project, ProjectImage,
                       ProjectVideo, PropertyVideo, PropertyLike,
                       Neighborhood, ProjectBuildingPlan,
                       PropertyBuildingPlan, PropertyOutwardView,
-                      PropertyCategory
+                      PropertyCategory, LocationFeature
                       )
 from core.serializers import BaseSerializer
 from financial.models import ShippingInfo, NFT
@@ -30,6 +30,12 @@ class VideoFieldSerializer(BaseSerializer):
     class Meta:
         fields = ['id', 'video_full_url', 'title', 'description',]
         abstract = True
+
+class LocationFeaturesSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = LocationFeature
+        fields = ['feature_name', 'feature_time_in_minutes',]
 
 class ProjectImageSerializer(ImageFieldSerializer):
     class Meta(ImageFieldSerializer.Meta):
@@ -157,6 +163,7 @@ class ProjectSerializer(BaseSerializer):
     min_price = serializers.SerializerMethodField()
     max_price = serializers.SerializerMethodField()
     plans = serializers.SerializerMethodField()
+    location_featuers = serializers.SerializerMethodField()
     
     class Meta:
         model = Project
@@ -169,7 +176,7 @@ class ProjectSerializer(BaseSerializer):
                     'has_security', 'has_theater', 'has_gym', 'has_meeting_room',
                     'has_pool', 'roofed_pool', 'has_music_room', 'has_yoga_room',
                     'has_party_room', 'has_spa', 'has_parking', 'roofed_parking',
-                    'images', 'videos', 'plans',
+                    'images', 'videos', 'plans', 'location_featuers'
                     ]
     
     def get_images(self, obj):
@@ -189,6 +196,12 @@ class ProjectSerializer(BaseSerializer):
         videos_queryset = ProjectVideo.objects.filter(project=obj)
         videos_serializer = ProjectVideoSerializer(instance=videos_queryset, many=True, context={'url': self.url})
         return videos_serializer.data  
+    
+    def get_location_featuers(self, obj):
+        queryset = obj.location_features.all()
+        serializer = LocationFeaturesSerializer(queryset, many=True)
+        return serializer.data
+
     
     def get_cover_img_full_url(self, obj):
         return get_full_url(obj, 'cover_img', self.url)

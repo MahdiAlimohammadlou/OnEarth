@@ -285,3 +285,11 @@ class Banner(AbstractBaseModel):
         if len(self.title) > 50:
             return self.title[:50] + "..."
         return self.title
+    
+class LocationFeature(AbstractBaseModel):
+    project = models.ForeignKey(Project, related_name='location_features', on_delete=models.CASCADE)
+    feature_name = models.CharField(max_length=255)
+    feature_time_in_minutes = models.IntegerField(default=5)
+
+    def __str__(self):
+        return f"{self.feature_name}: {self.feature_time_in_minutes}"
