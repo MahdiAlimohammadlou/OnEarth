@@ -176,7 +176,8 @@ class ProjectSerializer(BaseSerializer):
                     'has_security', 'has_theater', 'has_gym', 'has_meeting_room',
                     'has_pool', 'roofed_pool', 'has_music_room', 'has_yoga_room',
                     'has_party_room', 'has_spa', 'has_parking', 'roofed_parking',
-                    'images', 'videos', 'plans', 'location_featuers'
+                    'apartment_type_count', 'images', 'videos', 'plans',
+                    'location_featuers'
                     ]
     
     def get_images(self, obj):
