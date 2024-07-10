@@ -4,7 +4,7 @@ from .models import (Country, City, Project, ProjectImage,
                       ProjectVideo, PropertyVideo, PropertyLike,
                       Neighborhood, ProjectBuildingPlan,
                       PropertyBuildingPlan, PropertyOutwardView,
-                      PropertyCategory, LocationFeature
+                      LocationFeature, ProjectDetails
                       )
 from core.serializers import BaseSerializer
 from financial.models import ShippingInfo, NFT
@@ -28,14 +28,14 @@ class VideoFieldSerializer(BaseSerializer):
         return get_full_url(obj, 'video_file', self.url)
 
     class Meta:
-        fields = ['id', 'video_full_url', 'title', 'description',]
+        fields = ['id', 'video_full_url',]
         abstract = True
 
 class LocationFeaturesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = LocationFeature
-        fields = ['feature_name', 'feature_time_in_minutes',]
+        fields = ['feature_name', 'feature_time_in_minutes', 'type']
 
 class ProjectImageSerializer(ImageFieldSerializer):
     class Meta(ImageFieldSerializer.Meta):
@@ -65,11 +65,12 @@ class PropertyVideoSerializer(VideoFieldSerializer):
     class Meta(VideoFieldSerializer.Meta):
         model = PropertyVideo
 
-class PropertyCategorySerializer(BaseSerializer):
+class ProjectDetailsSerializer(BaseSerializer):
     class Meta:
-        model = PropertyCategory
+        model = ProjectDetails
         fields = [
-            'id', 'name'
+            'type', 'plot_area', 'total_height',
+            'total_construction_area', 'levels', 'project'
         ]
 
 class PropertySerializer(BaseSerializer):
@@ -172,10 +173,11 @@ class ProjectSerializer(BaseSerializer):
                     'min_bedrooms', 'max_bedrooms', 'min_area',
                     'max_area', 'cover_img_full_url', 'slug',
                     'country', 'min_price', 'max_price', 'latitude',
-                    'longitude', 'offer', 'floor_count',
-                    'has_security', 'has_theater', 'has_gym', 'has_meeting_room',
-                    'has_pool', 'roofed_pool', 'has_music_room', 'has_yoga_room',
-                    'has_party_room', 'has_spa', 'has_parking', 'roofed_parking',
+                    'longitude', 'offer', 'security_count','theater_count',
+                    'gym_count','meeting_room_count', 'pool_count','roofed_pool_count', 
+                    'music_room_count','yoga_room_count','party_room_count', 'spa_count',
+                    'parking_count','roofed_parking_count','landscaped_gardens_count',
+                    'kids_swimming_pool_count','retail_areas_count','retail_areas_count','large_lifts','brochure',
                     'apartment_type_count', 'images', 'videos', 'plans',
                     'location_featuers'
                     ]
@@ -286,11 +288,8 @@ class CountrySerializer(BaseSerializer):
         
     def get_flag_img_full_url(self, obj):
         return get_full_url(obj, 'flag_img', self.url)
-
-        
         
 class BannerSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Banner
         fields = ['title',]

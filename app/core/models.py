@@ -9,6 +9,7 @@ class AbstractBaseModel(models.Model):
 
     class Meta:
         abstract = True
+        ordering = ["id"]
 
     def save(self, *args, **kwargs) -> None:
         super().save(*args, **kwargs) 
@@ -45,7 +46,7 @@ class AbstractBaseInfoModel(AbstractBaseModel):
                     except FileNotFoundError:
                         print(f"File {image_field.path} not found. Skipping resize.")
 
-class AboutUsInfo(models.Model):
+class AboutUsInfo(AbstractBaseModel):
     email = models.EmailField(max_length=255)
     phone_number = models.CharField(max_length=17)
     address = models.TextField()
