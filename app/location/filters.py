@@ -10,13 +10,10 @@ class PropertyFilter(filters.FilterSet):
     min_area = filters.NumberFilter(field_name='area', lookup_expr='gte')
     max_area = filters.NumberFilter(field_name='area', lookup_expr='lte')
     bedrooms = filters.NumberFilter(field_name='bedrooms', lookup_expr='exact')
-    bathrooms = filters.NumberFilter(field_name='bathrooms', lookup_expr='exact')
-    pool_count = filters.NumberFilter(field_name='pool_count', lookup_expr='exact')
-    tub_count = filters.NumberFilter(field_name='tub_count', lookup_expr='exact')
     furnished = filters.BooleanFilter(field_name='furnished')
     has_image = filters.BooleanFilter(method='filter_has_image')
     has_video = filters.BooleanFilter(method='filter_has_video')
-    category = filters.NumberFilter(field_name='category')
+    plan_type = filters.CharFilter(field_name='plan_type')
     project = filters.NumberFilter(field_name='project')
     floor = filters.NumberFilter(field_name='floor')
     unit_number = filters.NumberFilter(field_name='unit_number')
@@ -45,7 +42,7 @@ class PropertyFilter(filters.FilterSet):
 
     class Meta:
         model = Property
-        fields = ['country', 'city', 'min_price', 'max_price', 'min_area', 'max_area', 'bedrooms', 'bathrooms', 'furnished', 'has_image', 'has_video', 'search']
+        fields = ['country', 'city', 'min_price', 'max_price', 'min_area', 'max_area', 'bedrooms', 'plan_type', 'furnished', 'has_image', 'has_video', 'search']
 
 
 class ProjectFilter(filters.FilterSet):
@@ -60,18 +57,6 @@ class ProjectFilter(filters.FilterSet):
     # Booleans
     has_image = filters.BooleanFilter(method='filter_has_image')
     has_video = filters.BooleanFilter(method='filter_has_video')
-    has_security = filters.BooleanFilter(field_name='properties__has_security')
-    has_theater = filters.BooleanFilter(field_name='properties__has_theater')
-    has_gym = filters.BooleanFilter(field_name='properties__has_gym')
-    has_meeting_room = filters.BooleanFilter(field_name='properties__has_meeting_room')
-    has_pool = filters.BooleanFilter(field_name='has_pool')
-    roofed_pool = filters.BooleanFilter(field_name='roofed_pool')
-    has_music_room = filters.BooleanFilter(field_name='has_music_room')
-    has_yoga_room = filters.BooleanFilter(field_name='has_yoga_room')
-    has_party_room = filters.BooleanFilter(field_name='has_party_room')
-    has_spa = filters.BooleanFilter(field_name='has_spa')
-    has_parking = filters.BooleanFilter(field_name='has_parking')
-    roofed_parking = filters.BooleanFilter(field_name='roofed_parking')
 
     def _annotate_effective_price(self, queryset):
         return queryset.annotate(
