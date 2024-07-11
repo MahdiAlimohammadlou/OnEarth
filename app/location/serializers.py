@@ -80,7 +80,7 @@ class PropertyFacilitiesSerializer(BaseSerializer):
     class Meta:
         model = PropertyFacilities
         fields = [
-         'title', 'count', 'property',
+         'title', 'count', 'properties',
         ]
 
 class PropertySerializer(BaseSerializer):
@@ -156,8 +156,9 @@ class PropertySerializer(BaseSerializer):
         return obj.city
 
     def get_facilities(self, obj):
-        queryset = obj.propertyfacilities.all()
+        queryset = obj.property_facilities.all()
         serializer = PropertyFacilitiesSerializer(queryset, many=True)
+        return serializer.data
 
 
 class ProjectSerializer(BaseSerializer):
@@ -246,6 +247,7 @@ class ProjectSerializer(BaseSerializer):
     def get_facilities(self, obj):
         queryset = obj.projectfacilities.all()
         serializer = ProjectFacilitiesSerializer(queryset, many=True)
+        return serializer.data
 
 
 class NeighborhoodSerializer(BaseSerializer):

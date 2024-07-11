@@ -9,7 +9,7 @@ from .models import (
 class CountryAdmin(admin.ModelAdmin):
     list_display = ('name', 'code', 'flag_img', 'country_img')
     search_fields = ('name', 'code')
-    
+
 class CityAdmin(admin.ModelAdmin):
     list_display = ('name', 'country', 'average_groth', 'min_price', 'max_price', 'project_count')
     search_fields = ('name',)
@@ -68,8 +68,8 @@ class PropertyLikeAdmin(admin.ModelAdmin):
     list_filter = ('user', 'property')
 
 class PropertyFacilitiesAdmin(admin.ModelAdmin):
-    list_display = ('title', 'count', 'property')
-    search_fields = ('title', 'property__project__title')
+    list_display = ('title', 'count')
+    search_fields = ('title', 'properties__project__title')
 
 class BannerAdmin(admin.ModelAdmin):
     list_display = ('title', 'banner_img')
