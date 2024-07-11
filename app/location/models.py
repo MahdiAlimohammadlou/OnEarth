@@ -115,11 +115,11 @@ class Project(AbstractBaseModel):
         return self.title
     
 class ProjectDetails(AbstractBaseModel):
-    type = models.CharField(max_length=255)
-    plot_area = models.CharField(max_length=255)
-    total_height = models.CharField(max_length=255)
-    total_construction_area = models.CharField(max_length=255)
-    levels = models.CharField(max_length=255)
+    type = models.CharField(max_length=255, null=True, blank=True)
+    plot_area = models.CharField(max_length=255, null=True, blank=True)
+    total_height = models.CharField(max_length=255, null=True, blank=True)
+    total_construction_area = models.CharField(max_length=255, null=True, blank=True)
+    levels = models.CharField(max_length=255, null=True, blank=True)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
