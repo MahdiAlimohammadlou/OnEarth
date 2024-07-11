@@ -83,12 +83,11 @@ class PropertySerializer(BaseSerializer):
     class Meta:
         model = Property
         fields = ['id', 
-                    'project', 'plan_type', 'heating_option', 'latitude', 'longitude',
-                    'price_per_nft', 'area', 'average_rating', 'offer', 'bedrooms',
-                    'bathrooms', 'tub_count', 'pool_count', 'parking_space_count',
-                    'master_count', 'first_floor', 'last_floor', 'likes', 'first_unit_number',
-                    'last_unit_number', 'living_room_count', 'lundry_count', 'closet_count',
-                    'balcony_count', 'furnished', 'is_open_kichen',
+                    'project', 
+                    'project', 'plan_type', 'heating_option', 'latitude',
+                    'longitude', 'price_per_nft', 'area', 'average_rating', 'offer',
+                    'bedrooms', 'living_rooms', 'first_floor', 'last_floor', 'likes',
+                    'first_unit_number', 'last_unit_number', 'furnished', 'cover_img',
                     'effective_price', 'cover_img_full_url', 'country',
                     'city', 'project_title', 'shipping_info', 'images',
                     'videos', 'plans',
@@ -158,13 +157,10 @@ class ProjectSerializer(BaseSerializer):
     
     class Meta:
         model = Project
-        fields = ['id', 'neighborhood', 'city', 'title', 'description', 'address',
-                   'slug', 'average_rating', 'latitude', 'longitude', 'offer', 'property_count',
-                    'security_count', 'theater_count', 'gym_count', 'meeting_room_count',
-                    'pool_count', 'roofed_pool_count', 'music_room_count', 'yoga_room_count',
-                    'party_room_count', 'spa_count', 'parking_count', 'roofed_parking_count',
-                    'landscaped_gardens_count', 'kids_swimming_pool_count', 'retail_areas_count',
-                    'retail_areas_count', 'large_lifts', 'cover_img', 'brochure_full_url', 
+        fields = ['id', 
+                    'neighborhood', 'city',  'title',  'description',
+                    'address', 'slug', 'average_rating', 'latitude',
+                    'longitude', 'offer', 'property_count', 'cover_img', 'brochure',
                     'min_price', 'max_price', 'cover_img_full_url', 'min_area',
                     'max_area', 'min_bedrooms', 'max_bedrooms', 'country',
                     'images', 'videos', 'plans', 'location_featuers',

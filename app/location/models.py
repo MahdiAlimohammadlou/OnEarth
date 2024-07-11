@@ -66,25 +66,8 @@ class Project(AbstractBaseModel):
     latitude = models.FloatField(null=True, blank=True, default=1.45648)
     longitude = models.FloatField(null=True, blank=True, default=1.45648)
     offer = models.DecimalField(max_digits=5, decimal_places=2, validators=[MinValueValidator(0), MaxValueValidator(100)], null=True, blank=True, default=0)
-    #Facilities
+    #Integer fields
     property_count = models.IntegerField(default=0)
-    security_count = models.IntegerField(default=0)
-    theater_count = models.IntegerField(default=0)
-    gym_count = models.IntegerField(default=0)
-    meeting_room_count = models.IntegerField(default=0)
-    pool_count = models.IntegerField(default=0)
-    roofed_pool_count = models.IntegerField(default=0)
-    music_room_count = models.IntegerField(default=0)
-    yoga_room_count = models.IntegerField(default=0)
-    party_room_count = models.IntegerField(default=0)
-    spa_count = models.IntegerField(default=0)
-    parking_count = models.IntegerField(default=0)
-    roofed_parking_count = models.IntegerField(default=0)
-    landscaped_gardens_count = models.IntegerField(default=0)
-    kids_swimming_pool_count = models.IntegerField(default=0)
-    retail_areas_count = models.IntegerField(default=0)
-    retail_areas_count = models.IntegerField(default=0)
-    large_lifts = models.IntegerField(default=0)
     #Image fields
     cover_img = models.ImageField(upload_to = "project_cover_images/", null = True, blank = True)
     #File fields
@@ -162,6 +145,11 @@ class ProjectVideo(AbstractBaseModel):
 
     def __str__(self):
         return self.title
+    
+class ProjectFacilities(AbstractBaseModel):
+    title = models.CharField(max_length=255)
+    count = models.IntegerField(default=0)
+    project = models.ForeignKey('property', on_delete=models.CASCADE)
 
 class Property(AbstractBaseModel):
 
@@ -195,23 +183,14 @@ class Property(AbstractBaseModel):
     offer = models.DecimalField(max_digits=5, decimal_places=2, validators=[MinValueValidator(0), MaxValueValidator(100)], null=True, blank=True, default=0)
     #Integers
     bedrooms = models.IntegerField(default=0)
-    bathrooms = models.IntegerField(default=0)
-    tub_count = models.IntegerField(default=0)
-    pool_count = models.IntegerField(default=0)
-    parking_space_count = models.IntegerField(default=1)
-    master_count = models.IntegerField(default=0)
+    living_rooms = models.IntegerField(null=True, blank=True, default=1)
     first_floor = models.IntegerField(null=True, blank=True, default=1)
     last_floor = models.IntegerField(null=True, blank=True, default=1)
     likes = models.IntegerField(default=0)
     first_unit_number = models.IntegerField(null=True, blank=True, default=1)
     last_unit_number = models.IntegerField(null=True, blank=True, default=1)
-    living_room_count = models.IntegerField(null=True, blank=True, default=1)
-    lundry_count = models.IntegerField(null=True, blank=True, default=1)
-    closet_count = models.IntegerField(null=True, blank=True, default=1)
-    balcony_count = models.IntegerField(null=True, blank=True, default=1)
     #Booleans
     furnished = models.BooleanField(default=False)
-    is_open_kichen = models.BooleanField(default=False)
     #Image
     cover_img = models.ImageField(upload_to = "property_cover_images/", null = True, blank = True)
 
@@ -261,6 +240,11 @@ class PropertyLike(AbstractBaseModel):
 
     class Meta:
         unique_together = ('user', 'property')
+    
+class PropertyFacilities(AbstractBaseModel):
+    title = models.CharField(max_length=255)
+    count = models.IntegerField(default=0)
+    property = models.ForeignKey('Property', on_delete=models.CASCADE)
 
 class Banner(AbstractBaseModel):
     title = models.TextField()
