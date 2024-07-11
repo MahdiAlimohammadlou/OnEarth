@@ -149,7 +149,7 @@ class ProjectVideo(AbstractBaseModel):
 class ProjectFacilities(AbstractBaseModel):
     title = models.CharField(max_length=255)
     count = models.IntegerField(default=0)
-    project = models.ForeignKey('property', on_delete=models.CASCADE, related_name="projectfacilities")
+    project = models.ForeignKey('Project', on_delete=models.CASCADE, related_name="projectfacilities")
 
 class Property(AbstractBaseModel):
 
