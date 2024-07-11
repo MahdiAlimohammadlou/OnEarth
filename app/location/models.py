@@ -67,6 +67,7 @@ class Project(AbstractBaseModel):
     longitude = models.FloatField(null=True, blank=True, default=1.45648)
     offer = models.DecimalField(max_digits=5, decimal_places=2, validators=[MinValueValidator(0), MaxValueValidator(100)], null=True, blank=True, default=0)
     #Facilities
+    property_count = models.IntegerField(default=0)
     security_count = models.IntegerField(default=0)
     theater_count = models.IntegerField(default=0)
     gym_count = models.IntegerField(default=0)
@@ -102,10 +103,6 @@ class Project(AbstractBaseModel):
         if properties:
             return max(property.effective_price for property in properties)
         return None
-
-    @property
-    def property_count(self):
-        return self.properties.count()
     
     @property
     def min_bedrooms(self):
@@ -185,10 +182,9 @@ class Property(AbstractBaseModel):
     ]
 
     #Relations
-    # category = models.ForeignKey('PropertyCategory', related_name='properties', on_delete=models.SET_NULL)
     project = models.ForeignKey('Project', related_name='properties', on_delete=models.CASCADE, null=True, blank=True)
-
     #STR fields
+    plan_type = models.CharField(max_length=100)
     heating_option = models.CharField(max_length=50, choices=HEATING_OPTIONS, default='none')
     #Decimals
     latitude = models.FloatField(null=True, blank=True, default=1.45648)
@@ -244,19 +240,12 @@ class PropertyImage(AbstractBaseModel):
     def __str__(self):
         return self.property.project.title + ' Image'
     
-class PropertyBuildingPlan(AbstractBaseModel):
+class PropertyBuildingPlanImages(AbstractBaseModel):
     property = models.ForeignKey('Property', on_delete=models.CASCADE)
     image = models.ImageField(upload_to='property_plan_images/') 
 
     def __str__(self):
         return self.property.project.title + ' building plan'
-    
-class PropertyOutwardView(AbstractBaseModel):
-    property = models.ForeignKey('Property', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='property_outward_images/') 
-
-    def __str__(self):
-        return self.property.project.title + ' outward view'
     
 class PropertyVideo(AbstractBaseModel):
     property = models.ForeignKey(Property, related_name='videos', on_delete=models.CASCADE)

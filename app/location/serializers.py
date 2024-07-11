@@ -3,8 +3,7 @@ from .models import (Country, City, Project, ProjectImage,
                       Property, PropertyImage, Banner,
                       ProjectVideo, PropertyVideo, PropertyLike,
                       Neighborhood, ProjectBuildingPlan,
-                      PropertyBuildingPlan, PropertyOutwardView,
-                      LocationFeature, ProjectDetails
+                      PropertyBuildingPlanImages, LocationFeature, ProjectDetails
                       )
 from core.serializers import BaseSerializer
 from financial.models import ShippingInfo, NFT
@@ -53,13 +52,9 @@ class PropertyImageSerializer(ImageFieldSerializer):
     class Meta(ImageFieldSerializer.Meta):
         model = PropertyImage
 
-class PropertyBuildingPlanSerializer(ImageFieldSerializer):
+class PropertyBuildingPlanImagesSerializer(ImageFieldSerializer):
     class Meta(ImageFieldSerializer.Meta):
-        model = PropertyBuildingPlan
-
-class PropertyOutwardViewSerializer(ImageFieldSerializer):
-    class Meta(ImageFieldSerializer.Meta):
-        model = PropertyOutwardView
+        model = PropertyBuildingPlanImages
 
 class PropertyVideoSerializer(VideoFieldSerializer):
     class Meta(VideoFieldSerializer.Meta):
@@ -74,29 +69,29 @@ class ProjectDetailsSerializer(BaseSerializer):
         ]
 
 class PropertySerializer(BaseSerializer):
-    images = serializers.SerializerMethodField()
-    videos = serializers.SerializerMethodField()
+    effective_price = serializers.SerializerMethodField()
     cover_img_full_url = serializers.SerializerMethodField()
     country = serializers.SerializerMethodField()
     city = serializers.SerializerMethodField()
     project_title = serializers.SerializerMethodField()
     shipping_info = serializers.SerializerMethodField()
+    images = serializers.SerializerMethodField()
+    videos = serializers.SerializerMethodField()
     # nfts = serializers.SerializerMethodField()
-    effective_price = serializers.SerializerMethodField()
     plans = serializers.SerializerMethodField()
-    outward_views = serializers.SerializerMethodField()
     
     class Meta:
         model = Property
-        fields = ['id', 'name', 'project', 'category', 'project_title', 'latitude',
-                    'longitude', 'description', 'price_per_nft', 'offer', 'effective_price',
-                    'area', 'bedrooms', 'bathrooms', 'purpose', 'parking_space_count', 'has_maid_room',
-                    'has_swimming_pool','has_steam_room', 'average_rating',
-                    'cover_img_full_url', 'country', 'city', 'master_count',
-                    'heating_option', 'floor', 'unit_number', 'tub_count', 'pool_count', 'living_room_count',
-                    'has_living_room', 'has_dining_room', 'has_kitchen', 'has_bedroom', 'has_bathroom', 'has_balcony',
-                    'shipping_info', 'plans', 'outward_views', 'videos', 'images',
-                    #   'nfts'
+        fields = ['id', 
+                    'project', 'plan_type', 'heating_option', 'latitude', 'longitude',
+                    'price_per_nft', 'area', 'average_rating', 'offer', 'bedrooms',
+                    'bathrooms', 'tub_count', 'pool_count', 'parking_space_count',
+                    'master_count', 'first_floor', 'last_floor', 'likes', 'first_unit_number',
+                    'last_unit_number', 'living_room_count', 'lundry_count', 'closet_count',
+                    'balcony_count', 'furnished', 'is_open_kichen',
+                    'effective_price', 'cover_img_full_url', 'country',
+                    'city', 'project_title', 'shipping_info', 'images',
+                    'videos', 'plans',
                        ]
         
     def get_effective_price(self, obj):
@@ -130,14 +125,9 @@ class PropertySerializer(BaseSerializer):
         return images_serializer.data  
 
     def get_plans(self, obj):
-        plans_queryset = PropertyBuildingPlan.objects.filter(property=obj)
-        plans_serializer = PropertyBuildingPlanSerializer(instance=plans_queryset, many=True, context={'url': self.url})
+        plans_queryset = PropertyBuildingPlanImages.objects.filter(property=obj)
+        plans_serializer = PropertyBuildingPlanImagesSerializer(instance=plans_queryset, many=True, context={'url': self.url})
         return plans_serializer.data
-
-    def get_outward_views(self, obj):
-        queryset = PropertyOutwardView.objects.filter(property=obj)
-        serializer = PropertyOutwardViewSerializer(instance=queryset, many=True, context={'url': self.url})
-        return serializer.data
 
     def get_videos(self, obj):
         videos_queryset = PropertyVideo.objects.filter(property=obj)
@@ -152,34 +142,32 @@ class PropertySerializer(BaseSerializer):
 
 
 class ProjectSerializer(BaseSerializer):
-    images = serializers.SerializerMethodField()
-    videos = serializers.SerializerMethodField()
-    cover_img_full_url = serializers.SerializerMethodField()
-    property_count = serializers.SerializerMethodField()
-    min_bedrooms = serializers.SerializerMethodField()
-    max_bedrooms = serializers.SerializerMethodField()
-    min_area = serializers.SerializerMethodField()
-    max_area = serializers.SerializerMethodField()
-    country = serializers.SerializerMethodField()
     min_price = serializers.SerializerMethodField()
     max_price = serializers.SerializerMethodField()
+    cover_img_full_url = serializers.SerializerMethodField()
+    brochure_full_url = serializers.SerializerMethodField()
+    min_area = serializers.SerializerMethodField()
+    max_area = serializers.SerializerMethodField()
+    min_bedrooms = serializers.SerializerMethodField()
+    max_bedrooms = serializers.SerializerMethodField()
+    country = serializers.SerializerMethodField()
+    images = serializers.SerializerMethodField()
+    videos = serializers.SerializerMethodField()
     plans = serializers.SerializerMethodField()
     location_featuers = serializers.SerializerMethodField()
     
     class Meta:
         model = Project
-        fields = ['id', 'title', 'neighborhood', 'description',
-                   'average_rating', 'address', 'property_count',
-                    'min_bedrooms', 'max_bedrooms', 'min_area',
-                    'max_area', 'cover_img_full_url', 'slug',
-                    'country', 'min_price', 'max_price', 'latitude',
-                    'longitude', 'offer', 'security_count','theater_count',
-                    'gym_count','meeting_room_count', 'pool_count','roofed_pool_count', 
-                    'music_room_count','yoga_room_count','party_room_count', 'spa_count',
-                    'parking_count','roofed_parking_count','landscaped_gardens_count',
-                    'kids_swimming_pool_count','retail_areas_count','retail_areas_count','large_lifts','brochure',
-                    'apartment_type_count', 'images', 'videos', 'plans',
-                    'location_featuers'
+        fields = ['id', 'neighborhood', 'city', 'title', 'description', 'address',
+                   'slug', 'average_rating', 'latitude', 'longitude', 'offer', 'property_count',
+                    'security_count', 'theater_count', 'gym_count', 'meeting_room_count',
+                    'pool_count', 'roofed_pool_count', 'music_room_count', 'yoga_room_count',
+                    'party_room_count', 'spa_count', 'parking_count', 'roofed_parking_count',
+                    'landscaped_gardens_count', 'kids_swimming_pool_count', 'retail_areas_count',
+                    'retail_areas_count', 'large_lifts', 'cover_img', 'brochure_full_url', 
+                    'min_price', 'max_price', 'cover_img_full_url', 'min_area',
+                    'max_area', 'min_bedrooms', 'max_bedrooms', 'country',
+                    'images', 'videos', 'plans', 'location_featuers',
                     ]
     
     def get_images(self, obj):
@@ -204,13 +192,18 @@ class ProjectSerializer(BaseSerializer):
         queryset = obj.location_features.all()
         serializer = LocationFeaturesSerializer(queryset, many=True)
         return serializer.data
-
     
     def get_cover_img_full_url(self, obj):
-        return get_full_url(obj, 'cover_img', self.url)
-
-    def get_property_count(self, obj):
-        return obj.property_count
+        if obj.cover_img:
+            return get_full_url(obj, 'cover_img', self.url)
+        else:
+            return None
+    
+    def get_brochure_full_url(self, obj):
+        if obj.brochure:
+            return get_full_url(obj, 'brochure', self.url)
+        else:
+            return None
 
     def get_min_bedrooms(self, obj):
         return obj.min_bedrooms
