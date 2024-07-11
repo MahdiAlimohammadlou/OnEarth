@@ -149,7 +149,7 @@ class ProjectVideo(AbstractBaseModel):
 class ProjectFacilities(AbstractBaseModel):
     title = models.CharField(max_length=255)
     count = models.IntegerField(default=0)
-    project = models.ForeignKey('property', on_delete=models.CASCADE)
+    project = models.ForeignKey('property', on_delete=models.CASCADE, related_name="projectfacilities")
 
 class Property(AbstractBaseModel):
 
@@ -244,7 +244,7 @@ class PropertyLike(AbstractBaseModel):
 class PropertyFacilities(AbstractBaseModel):
     title = models.CharField(max_length=255)
     count = models.IntegerField(default=0)
-    property = models.ForeignKey('Property', on_delete=models.CASCADE)
+    property = models.ForeignKey('Property', on_delete=models.CASCADE, related_name="propertyfacilities")
 
 class Banner(AbstractBaseModel):
     title = models.TextField()

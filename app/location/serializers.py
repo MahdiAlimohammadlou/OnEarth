@@ -3,7 +3,8 @@ from .models import (Country, City, Project, ProjectImage,
                       Property, PropertyImage, Banner,
                       ProjectVideo, PropertyVideo, PropertyLike,
                       Neighborhood, ProjectBuildingPlan,
-                      PropertyBuildingPlanImages, LocationFeature, ProjectDetails
+                      PropertyBuildingPlanImages, LocationFeature,
+                        ProjectDetails, ProjectFacilities, PropertyFacilities
                       )
 from core.serializers import BaseSerializer
 from financial.models import ShippingInfo, NFT
@@ -68,6 +69,20 @@ class ProjectDetailsSerializer(BaseSerializer):
             'total_construction_area', 'levels', 'project'
         ]
 
+class ProjectFacilitiesSerializer(BaseSerializer):
+    class Meta:
+        model = ProjectFacilities
+        fields = [
+         'title', 'count', 'project',
+        ]
+
+class PropertyFacilitiesSerializer(BaseSerializer):
+    class Meta:
+        model = PropertyFacilities
+        fields = [
+         'title', 'count', 'property',
+        ]
+
 class PropertySerializer(BaseSerializer):
     effective_price = serializers.SerializerMethodField()
     cover_img_full_url = serializers.SerializerMethodField()
@@ -79,6 +94,7 @@ class PropertySerializer(BaseSerializer):
     videos = serializers.SerializerMethodField()
     # nfts = serializers.SerializerMethodField()
     plans = serializers.SerializerMethodField()
+    facilities = serializers.SerializerMethodField()
     
     class Meta:
         model = Property
@@ -90,7 +106,7 @@ class PropertySerializer(BaseSerializer):
                     'first_unit_number', 'last_unit_number', 'furnished', 'cover_img',
                     'effective_price', 'cover_img_full_url', 'country',
                     'city', 'project_title', 'shipping_info', 'images',
-                    'videos', 'plans',
+                    'videos', 'plans', 'facilities'
                        ]
         
     def get_effective_price(self, obj):
@@ -139,6 +155,10 @@ class PropertySerializer(BaseSerializer):
     def get_city(self, obj):
         return obj.city
 
+    def get_facilities(self, obj):
+        queryset = obj.propertyfacilities.all()
+        serializer = PropertyFacilitiesSerializer(queryset, many=True)
+
 
 class ProjectSerializer(BaseSerializer):
     min_price = serializers.SerializerMethodField()
@@ -154,6 +174,7 @@ class ProjectSerializer(BaseSerializer):
     videos = serializers.SerializerMethodField()
     plans = serializers.SerializerMethodField()
     location_featuers = serializers.SerializerMethodField()
+    facilities = serializers.SerializerMethodField()
     
     class Meta:
         model = Project
@@ -163,7 +184,7 @@ class ProjectSerializer(BaseSerializer):
                     'longitude', 'offer', 'property_count', 'cover_img', 'brochure',
                     'min_price', 'max_price', 'cover_img_full_url', 'min_area',
                     'max_area', 'min_bedrooms', 'max_bedrooms', 'country',
-                    'images', 'videos', 'plans', 'location_featuers',
+                    'images', 'videos', 'plans', 'location_featuers', 'facilities'
                     ]
     
     def get_images(self, obj):
@@ -221,6 +242,10 @@ class ProjectSerializer(BaseSerializer):
 
     def get_max_price(self, obj):
         return obj.max_price
+
+    def get_facilities(self, obj):
+        queryset = obj.projectfacilities.all()
+        serializer = ProjectFacilitiesSerializer(queryset, many=True)
 
 
 class NeighborhoodSerializer(BaseSerializer):
