@@ -244,7 +244,7 @@ class PropertyLike(AbstractBaseModel):
 class PropertyFacilities(AbstractBaseModel):
     title = models.CharField(max_length=255)
     count = models.IntegerField(default=0)
-    property = models.ForeignKey('Property', on_delete=models.CASCADE, related_name="propertyfacilities")
+    properties = models.ManyToManyField('Property', related_name="property_facilities")
 
 class Banner(AbstractBaseModel):
     title = models.TextField()
