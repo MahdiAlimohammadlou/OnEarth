@@ -210,7 +210,7 @@ class Property(AbstractBaseModel):
         return self.project.neighborhood.city.name
 
     def __str__(self):
-        return self.name
+        return self.plan_type
     
 class PropertyImage(AbstractBaseModel):
     property = models.ForeignKey('Property', on_delete=models.CASCADE)
