@@ -1,10 +1,9 @@
 from core.views import LocationBaseModelViewSet
-from .models import Country, City, Project, Property, Banner, PropertyLike, Neighborhood, PropertyCategory
+from .models import Country, City, Project, Property, Banner, PropertyLike, Neighborhood
 from .serializers import (
     CountrySerializer, CitySerializer,
     ProjectSerializer, PropertySerializer,
-    BannerSerializer, PropertyCategorySerializer,
-    NeighborhoodSerializer)
+    BannerSerializer, NeighborhoodSerializer)
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status, permissions
@@ -83,7 +82,6 @@ class ProjectViewSet(LocationBaseModelViewSet):
     def search(self, request):
         filtered_qs = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(filtered_qs)
-        url = get_current_url(request)
         if page is not None:
             serializer = self.get_serializer(page, many=True, context={'request': request})
             return self.get_paginated_response(serializer.data)
@@ -140,19 +138,11 @@ class PropertyViewSet(LocationBaseModelViewSet):
         else:
             return Response({"detail": "Category not selected."}, status=status.HTTP_400_BAD_REQUEST)
 
-
-
 class BannerListView(APIView):
     def get(self, request):
         banners_queryset = Banner.objects.all()
         serializer = BannerSerializer(banners_queryset, many=True)
         return Response(serializer.data) 
-
-class PropertyCategoryListView(APIView):
-    def get(self, request):
-        queryset = PropertyCategory.objects.all()
-        serializer = PropertyCategorySerializer(queryset, many=True)
-        return Response(serializer.data)
 
 class PropertyLikeView(APIView):
     permission_classes = [permissions.IsAuthenticated]

@@ -43,7 +43,7 @@ class City(AbstractBaseModel):
         return self.name
 
 
-class Neighborhood(models.Model):
+class Neighborhood(AbstractBaseModel):
     name = models.CharField(max_length=100)
     city = models.ForeignKey(City, on_delete=models.CASCADE, related_name='neighborhoods')
     description = models.TextField()
@@ -66,23 +66,12 @@ class Project(AbstractBaseModel):
     latitude = models.FloatField(null=True, blank=True, default=1.45648)
     longitude = models.FloatField(null=True, blank=True, default=1.45648)
     offer = models.DecimalField(max_digits=5, decimal_places=2, validators=[MinValueValidator(0), MaxValueValidator(100)], null=True, blank=True, default=0)
-    floor_count = models.IntegerField(default=2)
-    apartment_type_count = models.IntegerField(default=2)
+    #Integer fields
+    property_count = models.IntegerField(default=0)
     #Image fields
     cover_img = models.ImageField(upload_to = "project_cover_images/", null = True, blank = True)
-    #Boolean fields
-    has_security = models.BooleanField(default=False)
-    has_theater = models.BooleanField(default=False)
-    has_gym = models.BooleanField(default=False)
-    has_meeting_room = models.BooleanField(default=False)
-    has_pool = models.BooleanField(default=False)
-    roofed_pool = models.BooleanField(default=False)
-    has_music_room = models.BooleanField(default=False)
-    has_yoga_room = models.BooleanField(default=False)
-    has_party_room = models.BooleanField(default=False)
-    has_spa = models.BooleanField(default=False)
-    has_parking = models.BooleanField(default=False)
-    roofed_parking = models.BooleanField(default=False)
+    #File fields
+    brochure = models.FileField(upload_to = "brochure_pdf/", null = True, blank = True)
     
     @property
     def min_price(self):
@@ -97,10 +86,6 @@ class Project(AbstractBaseModel):
         if properties:
             return max(property.effective_price for property in properties)
         return None
-
-    @property
-    def property_count(self):
-        return self.properties.count()
     
     @property
     def min_bedrooms(self):
@@ -129,6 +114,16 @@ class Project(AbstractBaseModel):
     def __str__(self):
         return self.title
     
+class ProjectDetails(AbstractBaseModel):
+    type = models.CharField(max_length=255)
+    plot_area = models.CharField(max_length=255)
+    total_height = models.CharField(max_length=255)
+    total_construction_area = models.CharField(max_length=255)
+    levels = models.CharField(max_length=255)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+
+    def __str__(self) -> str:
+        return self.project + "|" + self.key + "|" + self.value
 
 class ProjectImage(AbstractBaseModel):
     project = models.ForeignKey('Project', on_delete=models.CASCADE)
@@ -144,14 +139,17 @@ class ProjectBuildingPlan(AbstractBaseModel):
     def __str__(self):
         return self.project.title + ' building plan'
     
-class ProjectVideo(models.Model):
+class ProjectVideo(AbstractBaseModel):
     project = models.ForeignKey(Project, related_name='videos', on_delete=models.CASCADE)
-    title = models.CharField(max_length=100)
     video_file = models.FileField(upload_to='project_videos/')
-    description = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.title
+    
+class ProjectFacilities(AbstractBaseModel):
+    title = models.CharField(max_length=255)
+    count = models.IntegerField(default=0)
+    project = models.ForeignKey('property', on_delete=models.CASCADE, related_name="projectfacilities")
 
 class Property(AbstractBaseModel):
 
@@ -172,13 +170,10 @@ class Property(AbstractBaseModel):
     ]
 
     #Relations
-    category = models.ForeignKey('PropertyCategory', related_name='properties', on_delete=models.CASCADE)
-    project = models.ForeignKey('Project', related_name='properties', on_delete=models.CASCADE)
+    project = models.ForeignKey('Project', related_name='properties', on_delete=models.CASCADE, null=True, blank=True)
     #STR fields
-    name = models.CharField(max_length=100)
-    purpose = models.CharField(max_length = 255)
+    plan_type = models.CharField(max_length=100)
     heating_option = models.CharField(max_length=50, choices=HEATING_OPTIONS, default='none')
-    description = models.TextField()
     #Decimals
     latitude = models.FloatField(null=True, blank=True, default=1.45648)
     longitude = models.FloatField(null=True, blank=True, default=1.45648)
@@ -188,26 +183,14 @@ class Property(AbstractBaseModel):
     offer = models.DecimalField(max_digits=5, decimal_places=2, validators=[MinValueValidator(0), MaxValueValidator(100)], null=True, blank=True, default=0)
     #Integers
     bedrooms = models.IntegerField(default=0)
-    bathrooms = models.IntegerField(default=0)
-    tub_count = models.IntegerField(default=0)
-    pool_count = models.IntegerField(default=0)
-    parking_space_count = models.IntegerField(default=1)
-    master_count = models.IntegerField()
-    floor = models.IntegerField(null=True, blank=True, default=1)
+    living_rooms = models.IntegerField(null=True, blank=True, default=1)
+    first_floor = models.IntegerField(null=True, blank=True, default=1)
+    last_floor = models.IntegerField(null=True, blank=True, default=1)
     likes = models.IntegerField(default=0)
-    unit_number = models.IntegerField(null=True, blank=True, default=1)
-    living_room_count = models.IntegerField(null=True, blank=True, default=1)
+    first_unit_number = models.IntegerField(null=True, blank=True, default=1)
+    last_unit_number = models.IntegerField(null=True, blank=True, default=1)
     #Booleans
     furnished = models.BooleanField(default=False)
-    has_maid_room = models.BooleanField()
-    has_swimming_pool = models.BooleanField()
-    has_steam_room = models.BooleanField()
-    has_living_room = models.BooleanField(default=False)
-    has_dining_room = models.BooleanField(default=False)
-    has_kitchen = models.BooleanField(default=False)
-    has_bedroom = models.BooleanField(default=False)
-    has_bathroom = models.BooleanField(default=False)
-    has_balcony = models.BooleanField(default=False)
     #Image
     cover_img = models.ImageField(upload_to = "property_cover_images/", null = True, blank = True)
 
@@ -236,47 +219,32 @@ class PropertyImage(AbstractBaseModel):
     def __str__(self):
         return self.property.project.title + ' Image'
     
-class PropertyBuildingPlan(AbstractBaseModel):
+class PropertyBuildingPlanImages(AbstractBaseModel):
     property = models.ForeignKey('Property', on_delete=models.CASCADE)
     image = models.ImageField(upload_to='property_plan_images/') 
 
     def __str__(self):
         return self.property.project.title + ' building plan'
     
-class PropertyOutwardView(AbstractBaseModel):
-    property = models.ForeignKey('Property', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='property_outward_images/') 
-
-    def __str__(self):
-        return self.property.project.title + ' outward view'
-    
-class PropertyVideo(models.Model):
+class PropertyVideo(AbstractBaseModel):
     property = models.ForeignKey(Property, related_name='videos', on_delete=models.CASCADE)
-    title = models.CharField(max_length=100)
     video_file = models.FileField(upload_to='property_videos/')
-    description = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.title
 
-class PropertyLike(models.Model):
+class PropertyLike(AbstractBaseModel):
     user = models.ForeignKey(User, related_name='propertylikes', on_delete=models.CASCADE)
     property = models.ForeignKey(Property, related_name='propertylikes', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ('user', 'property')
-
-class PropertyCategory(models.Model):
-    CATEGORY_CHOICES = [
-    ('Duplex', 'Duplex'),
-    ('Studio', 'Studio'),
-    ]
-
-    name = models.CharField(max_length=50, choices=CATEGORY_CHOICES, unique=True)
-
-    def __str__(self):
-        return self.get_name_display()
+    
+class PropertyFacilities(AbstractBaseModel):
+    title = models.CharField(max_length=255)
+    count = models.IntegerField(default=0)
+    property = models.ForeignKey('Property', on_delete=models.CASCADE, related_name="propertyfacilities")
 
 class Banner(AbstractBaseModel):
     title = models.TextField()
@@ -288,9 +256,15 @@ class Banner(AbstractBaseModel):
         return self.title
     
 class LocationFeature(AbstractBaseModel):
+    VEHICLE_CHOICES = [
+        ("Walk", "walk"),
+        ("Car", "car"),
+    ]
+
     project = models.ForeignKey(Project, related_name='location_features', on_delete=models.CASCADE)
     feature_name = models.CharField(max_length=255)
-    feature_time_in_minutes = models.IntegerField(default=5)
+    feature_time_in_minutes = models.IntegerField(default=5, null=True, blank=True)
+    type = models.CharField(max_length=50, choices=VEHICLE_CHOICES, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.feature_name}: {self.feature_time_in_minutes}"
+        return f"{self.feature_name}: {self.feature_time_in_minutes} ({self.type})"
