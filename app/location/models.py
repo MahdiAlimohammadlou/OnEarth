@@ -123,7 +123,7 @@ class ProjectDetails(AbstractBaseModel):
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
 
     def __str__(self) -> str:
-        return self.project + "|" + self.key + "|" + self.value
+        return str(self.project)
 
 class ProjectImage(AbstractBaseModel):
     project = models.ForeignKey('Project', on_delete=models.CASCADE)
