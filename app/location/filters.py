@@ -15,7 +15,6 @@ class PropertyFilter(filters.FilterSet):
     has_video = filters.BooleanFilter(method='filter_has_video')
     plan_type = filters.CharFilter(field_name='plan_type')
     project = filters.NumberFilter(field_name='project')
-    floor = filters.NumberFilter(field_name='floor')
     unit_number = filters.NumberFilter(field_name='unit_number')
     search = filters.CharFilter(method='filter_search')
 
