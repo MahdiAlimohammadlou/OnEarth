@@ -170,7 +170,7 @@ class Property(AbstractBaseModel):
     ]
 
     #Relations
-    project = models.ForeignKey('Project', related_name='properties', on_delete=models.CASCADE, null=True, blank=True)
+    project = models.ForeignKey('Project', related_name='properties', on_delete=models.CASCADE)
     #STR fields
     plan_type = models.CharField(max_length=100)
     heating_option = models.CharField(max_length=50, choices=HEATING_OPTIONS, default='none')
@@ -231,7 +231,7 @@ class PropertyVideo(AbstractBaseModel):
     video_file = models.FileField(upload_to='property_videos/')
 
     def __str__(self):
-        return self.title
+        return self.property.plan_type
 
 class PropertyLike(AbstractBaseModel):
     user = models.ForeignKey(User, related_name='propertylikes', on_delete=models.CASCADE)
