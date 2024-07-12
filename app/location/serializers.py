@@ -80,7 +80,7 @@ class PropertyFacilitiesSerializer(BaseSerializer):
     class Meta:
         model = PropertyFacilities
         fields = [
-         'title', 'count', 'properties',
+         'title', 'count',
         ]
 
 class PropertySerializer(BaseSerializer):
@@ -102,11 +102,10 @@ class PropertySerializer(BaseSerializer):
                     'project', 
                     'project', 'plan_type', 'heating_option', 'latitude',
                     'longitude', 'price_per_nft', 'area', 'average_rating', 'offer',
-                    'bedrooms', 'living_rooms', 'first_floor', 'last_floor', 'likes',
-                    'first_unit_number', 'last_unit_number', 'furnished', 'cover_img',
+                    'bedrooms', 'living_rooms', 'likes', 'furnished', 'cover_img',
                     'effective_price', 'cover_img_full_url', 'country',
-                    'city', 'project_title', 'shipping_info', 'images',
-                    'videos', 'plans', 'facilities'
+                    'city', 'project_title', 'floor_numbers', 'unit_numbers_per_floor',
+                     'shipping_info', 'images', 'videos', 'plans', 'facilities'
                        ]
         
     def get_effective_price(self, obj):
@@ -182,7 +181,7 @@ class ProjectSerializer(BaseSerializer):
         fields = ['id', 
                     'neighborhood', 'city',  'title',  'description',
                     'address', 'slug', 'average_rating', 'latitude',
-                    'longitude', 'offer', 'property_count', 'cover_img', 'brochure',
+                    'longitude', 'offer', 'property_count', 'cover_img', 'brochure_full_url',
                     'min_price', 'max_price', 'cover_img_full_url', 'min_area',
                     'max_area', 'min_bedrooms', 'max_bedrooms', 'country',
                     'images', 'videos', 'plans', 'location_featuers', 'facilities'
