@@ -144,7 +144,7 @@ class ProjectVideo(AbstractBaseModel):
     video_file = models.FileField(upload_to='project_videos/')
 
     def __str__(self):
-        return self.title
+        return self.project.title
     
 class ProjectFacilities(AbstractBaseModel):
     title = models.CharField(max_length=255)
