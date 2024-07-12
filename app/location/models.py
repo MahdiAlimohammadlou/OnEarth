@@ -184,15 +184,14 @@ class Property(AbstractBaseModel):
     #Integers
     bedrooms = models.IntegerField(default=0)
     living_rooms = models.IntegerField(null=True, blank=True, default=1)
-    first_floor = models.IntegerField(null=True, blank=True, default=1)
-    last_floor = models.IntegerField(null=True, blank=True, default=1)
     likes = models.IntegerField(default=0)
-    first_unit_number = models.IntegerField(null=True, blank=True, default=1)
-    last_unit_number = models.IntegerField(null=True, blank=True, default=1)
     #Booleans
     furnished = models.BooleanField(default=False)
     #Image
     cover_img = models.ImageField(upload_to = "property_cover_images/", null = True, blank = True)
+    #JSON fields
+    floor_numbers = models.JSONField(null=True, blank=True, default=list) 
+    unit_numbers_per_floor = models.JSONField(null=True, blank=True, default=dict)
 
     @property
     def effective_price(self):
