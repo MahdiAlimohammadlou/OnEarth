@@ -35,7 +35,7 @@ class PropertyFilter(filters.FilterSet):
             Q(project__city__name__icontains=value) |
             Q(project__neighborhood__name__icontains=value) |
             Q(project__title__icontains=value) |
-            Q(name__icontains=value)
+            Q(plan_type__icontains=value)
         )
 
     class Meta:
