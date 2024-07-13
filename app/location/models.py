@@ -120,7 +120,7 @@ class ProjectDetails(AbstractBaseModel):
     total_height = models.CharField(max_length=255, null=True, blank=True)
     total_construction_area = models.CharField(max_length=255, null=True, blank=True)
     levels = models.CharField(max_length=255, null=True, blank=True)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name="project_details")
 
     def __str__(self) -> str:
         return str(self.project)

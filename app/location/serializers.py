@@ -175,6 +175,7 @@ class ProjectSerializer(BaseSerializer):
     plans = serializers.SerializerMethodField()
     location_featuers = serializers.SerializerMethodField()
     facilities = serializers.SerializerMethodField()
+    project_details = serializers.SerializerMethodField()
     
     class Meta:
         model = Project
@@ -184,7 +185,7 @@ class ProjectSerializer(BaseSerializer):
                     'longitude', 'offer', 'property_count', 'cover_img', 'brochure_full_url',
                     'min_price', 'max_price', 'cover_img_full_url', 'min_area',
                     'max_area', 'min_bedrooms', 'max_bedrooms', 'country',
-                    'images', 'videos', 'plans', 'location_featuers', 'facilities'
+                    'images', 'videos', 'plans', 'location_featuers', 'facilities', 'project_details'
                     ]
     
     def get_images(self, obj):
@@ -246,6 +247,11 @@ class ProjectSerializer(BaseSerializer):
     def get_facilities(self, obj):
         queryset = obj.projectfacilities.all()
         serializer = ProjectFacilitiesSerializer(queryset, many=True)
+        return serializer.data
+
+    def get_project_details(self, obj):
+        queryset = obj.project_details.all()
+        serializer = ProjectDetailsSerializer(queryset, many=True)
         return serializer.data
 
 
