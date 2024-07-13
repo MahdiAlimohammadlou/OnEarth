@@ -104,7 +104,10 @@ class PropertySerializer(BaseSerializer):
                     'longitude', 'price_per_nft', 'area', 'average_rating', 'offer',
                     'bedrooms', 'living_rooms', 'likes', 'furnished', 'cover_img',
                     'effective_price', 'cover_img_full_url', 'country',
-                    'city', 'project_title', 'floor_numbers', 'unit_numbers_per_floor',
+                    'city', 'project_title', 
+                    'is_open_kitchen', 'balcony', 'master', 'bathtub',
+                    'landry', 'guest_toliet', 'wardrop',
+                    'floor_numbers', 'unit_numbers_per_floor',
                      'shipping_info', 'images', 'videos', 'plans', 'facilities'
                        ]
         
@@ -185,7 +188,8 @@ class ProjectSerializer(BaseSerializer):
                     'longitude', 'offer', 'property_count', 'cover_img', 'brochure_full_url',
                     'min_price', 'max_price', 'cover_img_full_url', 'min_area',
                     'max_area', 'min_bedrooms', 'max_bedrooms', 'country',
-                    'images', 'videos', 'plans', 'location_featuers', 'facilities', 'project_details'
+                    'pool', 'gym', 'security', 'land_scape_green_garden', 'metting_room', 'parking',
+                    'images', 'videos', 'plans', 'location_featuers', 'facilities'
                     ]
     
     def get_images(self, obj):

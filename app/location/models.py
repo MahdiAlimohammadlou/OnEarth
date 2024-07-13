@@ -68,10 +68,18 @@ class Project(AbstractBaseModel):
     offer = models.DecimalField(max_digits=5, decimal_places=2, validators=[MinValueValidator(0), MaxValueValidator(100)], null=True, blank=True, default=0)
     #Integer fields
     property_count = models.IntegerField(default=0)
+    #Facilities
+    pool = models.IntegerField(default=0)
+    gym = models.IntegerField(default=0)
+    security = models.IntegerField(default=0)
+    land_scape_green_garden = models.IntegerField(default=0)
+    metting_room = models.IntegerField(default=0)
+    parking = models.IntegerField(default=0)
     #Image fields
     cover_img = models.ImageField(upload_to = "project_cover_images/", null = True, blank = True)
     #File fields
     brochure = models.FileField(upload_to = "brochure_pdf/", null = True, blank = True)
+
     
     @property
     def min_price(self):
@@ -185,6 +193,14 @@ class Property(AbstractBaseModel):
     bedrooms = models.IntegerField(default=0)
     living_rooms = models.IntegerField(null=True, blank=True, default=1)
     likes = models.IntegerField(default=0)
+    #Facility fields
+    is_open_kitchen = models.BooleanField(default=True)
+    balcony = models.IntegerField(default=0)
+    master = models.IntegerField(default=0)
+    bathtub = models.IntegerField(default=0)
+    landry = models.IntegerField(default=0)
+    guest_toliet = models.IntegerField(default=0)
+    wardrop = models.IntegerField(default=0)
     #Booleans
     furnished = models.BooleanField(default=False)
     #Image
