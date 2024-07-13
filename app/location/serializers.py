@@ -189,7 +189,7 @@ class ProjectSerializer(BaseSerializer):
                     'min_price', 'max_price', 'cover_img_full_url', 'min_area',
                     'max_area', 'min_bedrooms', 'max_bedrooms', 'country',
                     'pool', 'gym', 'security', 'land_scape_green_garden', 'metting_room', 'parking',
-                    'images', 'videos', 'plans', 'location_featuers', 'facilities'
+                    'images', 'videos', 'plans', 'location_featuers', 'facilities', 'project_details'
                     ]
     
     def get_images(self, obj):
