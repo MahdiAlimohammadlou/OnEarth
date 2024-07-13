@@ -68,6 +68,7 @@ class Project(AbstractBaseModel):
     offer = models.DecimalField(max_digits=5, decimal_places=2, validators=[MinValueValidator(0), MaxValueValidator(100)], null=True, blank=True, default=0)
     #Integer fields
     property_count = models.IntegerField(default=0)
+    floors = models.IntegerField(default=0)
     #Facilities
     pool = models.IntegerField(default=0)
     gym = models.IntegerField(default=0)

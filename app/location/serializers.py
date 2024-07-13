@@ -185,9 +185,9 @@ class ProjectSerializer(BaseSerializer):
         fields = ['id', 
                     'neighborhood', 'city',  'title',  'description',
                     'address', 'slug', 'average_rating', 'latitude',
-                    'longitude', 'offer', 'property_count', 'cover_img', 'brochure_full_url',
+                    'longitude', 'offer', 'property_count', 'brochure_full_url',
                     'min_price', 'max_price', 'cover_img_full_url', 'min_area',
-                    'max_area', 'min_bedrooms', 'max_bedrooms', 'country',
+                    'max_area', 'min_bedrooms', 'max_bedrooms', 'country', 'floors',
                     'pool', 'gym', 'security', 'land_scape_green_garden', 'metting_room', 'parking',
                     'images', 'videos', 'plans', 'location_featuers', 'facilities', 'project_details'
                     ]
