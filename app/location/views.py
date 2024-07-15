@@ -93,11 +93,11 @@ class ProjectViewSet(LocationBaseModelViewSet):
     def projects_with_offer(self, request, country_id=None):
         if country_id is not None:
             projects_with_offer = Project.objects.filter(
-                Q(city__country_id=country_id) & (Q(offer__gt=0) | Q(properties__offer__gt=0))
+                Q(city__country_id=country_id) & (Q(offer__gt=0) | Q(properties__offer__gt=0) | Q(has_promotion=True))
             ).distinct()
         else :
             projects_with_offer = projects_with_offer = Project.objects.filter( 
-                Q(offer__gt=0) | Q(properties__offer__gt=0)
+                Q(offer__gt=0) | Q(properties__offer__gt=0) | Q(has_promotion=True)
             ).distinct()
         serializer = self.get_serializer(projects_with_offer, many=True, context={'request': request})
         return Response(serializer.data)
