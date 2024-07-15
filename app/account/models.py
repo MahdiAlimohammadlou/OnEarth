@@ -65,6 +65,8 @@ class CommonFields(AbstractBaseInfoModel):
     passport_approval_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='New', verbose_name='Passport approval Status')
     birth_certificate = models.ImageField(upload_to='birth_certificate_images/', null=True, blank=True)
     birth_certificate_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='New', verbose_name='Passport approval Status')
+    background = models.ImageField(upload_to='background_images/', null=True, blank=True)
+    background_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='New', verbose_name='background approval Status')
     aggrement = models.ImageField(upload_to='aggrement_images/', null=True, blank=True)
     aggrement_approval_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='New', verbose_name='aggrement approval Status')
     
@@ -118,8 +120,6 @@ class SellerPersonalInfo(CommonFields):
         ('Approved', 'Approved'),
         ('Rejected', 'Rejected'),
     ]
-    background = models.ImageField(upload_to='background_images/', null=True, blank=True)
-    background_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='New', verbose_name='background approval Status')
     seller_user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='seller_personal_info')
 
 class Ticket(AbstractBaseModel):
