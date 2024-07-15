@@ -184,7 +184,7 @@ class ProjectSerializer(BaseSerializer):
         model = Project
         fields = ['id', 
                     'neighborhood', 'city',  'title',  'description',
-                    'address', 'slug', 'cheapest_property_type',
+                    'address', 'slug', 'cheapest_property_type', 'has_promotion',
                     'the_most_expensive_property_type', 'average_rating', 'latitude',
                     'longitude', 'offer', 'property_count', 'brochure_full_url',
                     'min_price', 'max_price', 'cover_img_full_url', 'min_area',
