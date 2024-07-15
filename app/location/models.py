@@ -61,6 +61,8 @@ class Project(AbstractBaseModel):
     description = models.TextField()
     address = models.TextField()
     slug = models.SlugField(unique=True, max_length=150, blank=True)
+    cheapest_property_type = models.CharField(max_length=50)
+    the_most_expensive_property_type = models.CharField(max_length=50)
     #Decimal fields
     average_rating = models.DecimalField(max_digits=2, decimal_places=1, default=5.0, validators=[MinValueValidator(0), MaxValueValidator(5)])
     latitude = models.FloatField(null=True, blank=True, default=1.45648)
@@ -80,6 +82,8 @@ class Project(AbstractBaseModel):
     cover_img = models.ImageField(upload_to = "project_cover_images/", null = True, blank = True)
     #File fields
     brochure = models.FileField(upload_to = "brochure_pdf/", null = True, blank = True)
+    #bollean fields
+    has_promotion = models.BooleanField(default=False)
 
     
     @property
