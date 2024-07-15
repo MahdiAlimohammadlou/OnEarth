@@ -7,7 +7,7 @@ class ShippingInfoSerializer(serializers.ModelSerializer):
         model = ShippingInfo
         fields = [
          "property", "tax_percentage", "title_deed_fee_percentage", "extra_fee_percentage",
-           "total_price", "connections", "payoff_price",
+           "total_price", "connections", 
         ]
 
 class NFTSerializer(serializers.ModelSerializer):
