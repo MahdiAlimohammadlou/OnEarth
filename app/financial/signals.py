@@ -16,5 +16,6 @@ def calculate_payoff_price(sender, instance, **kwargs):
     #     extra_fee_amount +
     #     instance.total_price
     # ) 
+    instance.payoff_price = instance.total_price
     instance.property.price_per_nft = instance.total_price / Decimal(5)
     instance.property.save()
