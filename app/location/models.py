@@ -231,7 +231,7 @@ class Property(AbstractBaseModel):
         return self.project.neighborhood.city.name
 
     def __str__(self):
-        return self.plan_type
+        return f"{self.plan_type}({self.project.title})"
     
 class PropertyImage(AbstractBaseModel):
     property = models.ForeignKey('Property', on_delete=models.CASCADE)
