@@ -41,7 +41,7 @@ class CityViewSet(LocationBaseModelViewSet):
             return self.get_paginated_response(serializer.data)
         
         serializer = self.get_serializer(filtered_qs, many=True, context={'request': request})
-        return serializer.data
+        return Response(serializer.data)
 
 class NeighborhoodViewSet(LocationBaseModelViewSet):
     model = Neighborhood
