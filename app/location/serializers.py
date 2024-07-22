@@ -104,7 +104,7 @@ class PropertySerializer(BaseSerializer):
                     'longitude', 'price_per_nft', 'area', 'average_rating', 'offer',
                     'bedrooms', 'living_rooms', 'likes', 'furnished', 'cover_img',
                     'effective_price', 'cover_img_full_url', 'country',
-                    'city', 'project_title', 
+                    'city', 'project_title', 'villa_numbers',
                     'is_open_kitchen', 'balcony', 'master', 'bathtub',
                     'landry', 'guest_toliet', 'wardrop',
                     'floor_numbers', 'unit_numbers_per_floor',

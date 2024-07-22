@@ -215,6 +215,7 @@ class Property(AbstractBaseModel):
     #JSON fields
     floor_numbers = models.JSONField(null=True, blank=True, default=list) 
     unit_numbers_per_floor = models.JSONField(null=True, blank=True, default=dict)
+    villa_numbers = models.JSONField(null=True, blank=True, default=list) 
 
     @property
     def effective_price(self):
