@@ -99,7 +99,7 @@ class ProjectFilter(filters.FilterSet):
         if value:
             return queryset.filter(
                 Q(offer__gt=0) | Q(properties__offer__gt=0) | Q(has_promotion=True)
-            )
+            ).distinct()
         return queryset
 
     class Meta:
