@@ -191,7 +191,7 @@ class Property(AbstractBaseModel):
     #Decimals
     latitude = models.FloatField(null=True, blank=True, default=1.45648)
     longitude = models.FloatField(null=True, blank=True, default=1.45648)
-    price_per_nft = models.DecimalField(max_digits=10, decimal_places=2)
+    price_per_nft = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     area = models.DecimalField(max_digits=10, decimal_places=2)
     balcony_metrage = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     average_rating = models.DecimalField(max_digits=2, decimal_places=1, default=5.0, validators=[MinValueValidator(0), MaxValueValidator(5)])
