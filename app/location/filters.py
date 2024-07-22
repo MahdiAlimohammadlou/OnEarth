@@ -55,6 +55,7 @@ class ProjectFilter(filters.FilterSet):
     # Booleans
     has_image = filters.BooleanFilter(method='filter_has_image')
     has_video = filters.BooleanFilter(method='filter_has_video')
+    has_offer = filters.BooleanFilter(method='filter_has_offer')
 
     def _annotate_effective_price(self, queryset):
         return queryset.annotate(
@@ -93,10 +94,17 @@ class ProjectFilter(filters.FilterSet):
             Q(neighborhood__name__icontains=value) |
             Q(title__icontains=value)
         )
+    
+    def filter_has_offer(self, queryset, name, value):
+        if value:
+            return queryset.filter(
+                Q(offer__gt=0) | Q(properties__offer__gt=0) | Q(has_promotion=True)
+            )
+        return queryset
 
     class Meta:
         model = Project
-        fields = ['country', 'city', 'min_price', 'max_price', 'min_area', 'max_area', 'furnished', 'has_image', 'has_video', 'search']
+        fields = ['country', 'city', 'min_price', 'max_price', 'min_area', 'max_area', 'furnished', 'has_image', 'has_video', 'search', 'has_offer']
 
 
 class CityFilter(filters.FilterSet):
