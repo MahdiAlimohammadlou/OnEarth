@@ -224,7 +224,7 @@ class ProjectSerializer(BaseSerializer):
             return None
     
     def get_master_plan_img_full_url(self, obj):
-        if obj.master_plan_img_:
+        if obj.master_plan_img:
             return get_full_url(obj, 'master_plan_img', self.url)
         else:
             return None
