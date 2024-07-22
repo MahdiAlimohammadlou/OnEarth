@@ -80,6 +80,7 @@ class Project(AbstractBaseModel):
     parking = models.IntegerField(default=0)
     #Image fields
     cover_img = models.ImageField(upload_to = "project_cover_images/", null = True, blank = True)
+    master_plan_img = models.ImageField(upload_to = "master_plan_images/", null = True, blank = True)
     #File fields
     brochure = models.FileField(upload_to = "brochure_pdf/", null = True, blank = True)
     #bollean fields
@@ -280,11 +281,13 @@ class LocationFeature(AbstractBaseModel):
     VEHICLE_CHOICES = [
         ("Walk", "walk"),
         ("Car", "car"),
+        ("Km", "km"),
     ]
 
     project = models.ForeignKey(Project, related_name='location_features', on_delete=models.CASCADE)
     feature_name = models.CharField(max_length=255)
     feature_time_in_minutes = models.IntegerField(default=5, null=True, blank=True)
+    feature_distance = models.IntegerField(default=5, null=True, blank=True)
     type = models.CharField(max_length=50, choices=VEHICLE_CHOICES, null=True, blank=True)
 
     def __str__(self):
