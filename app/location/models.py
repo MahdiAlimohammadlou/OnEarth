@@ -287,9 +287,9 @@ class LocationFeature(AbstractBaseModel):
 
     project = models.ForeignKey(Project, related_name='location_features', on_delete=models.CASCADE)
     feature_name = models.CharField(max_length=255)
-    feature_time_in_minutes = models.IntegerField(default=5, null=True, blank=True)
-    feature_distance = models.IntegerField(default=5, null=True, blank=True)
-    type = models.CharField(max_length=50, choices=VEHICLE_CHOICES, null=True, blank=True)
+    feature_time_in_minutes = models.IntegerField(null=True, blank=True)
+    feature_distance = models.IntegerField(null=True, blank=True)
+    type = models.CharField(max_length=50, choices=VEHICLE_CHOICES, null=True, blank=True, default="km")
 
     def __str__(self):
         return f"{self.feature_name}: {self.feature_time_in_minutes} ({self.type})"
