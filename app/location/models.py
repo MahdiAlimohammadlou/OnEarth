@@ -183,11 +183,17 @@ class Property(AbstractBaseModel):
         ('elektrikli radyator', 'Elektrikli Radyator'),
     ]
 
+    CATEGORIES = [
+        ('Apartment', 'apartment'),
+        ('Villa', 'villa'),
+    ]
+
     #Relations
     project = models.ForeignKey('Project', related_name='properties', on_delete=models.CASCADE)
     #STR fields
     plan_type = models.CharField(max_length=100)
     heating_option = models.CharField(max_length=50, choices=HEATING_OPTIONS, default='none')
+    category = models.CharField(max_length=50, choices=CATEGORIES, default='apartment')
     #Decimals
     price_per_nft = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     area = models.DecimalField(max_digits=10, decimal_places=2)
