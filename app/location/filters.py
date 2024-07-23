@@ -3,19 +3,23 @@ from django_filters import rest_framework as filters
 from django.db.models import Q, Count, F, ExpressionWrapper, FloatField
 
 class PropertyFilter(filters.FilterSet):
+    #str
     country = filters.CharFilter(field_name='project__city__country__name', lookup_expr='iexact')
     city = filters.CharFilter(field_name='project__city__name', lookup_expr='iexact')
+    plan_type = filters.CharFilter(field_name='plan_type')
+    category = filters.CharFilter(field_name='category')
+    search = filters.CharFilter(method='filter_search')
+    #num
     min_price = filters.NumberFilter(field_name='price_per_nft', lookup_expr='gte')
     max_price = filters.NumberFilter(field_name='price_per_nft', lookup_expr='lte')
     min_area = filters.NumberFilter(field_name='area', lookup_expr='gte')
     max_area = filters.NumberFilter(field_name='area', lookup_expr='lte')
     bedrooms = filters.NumberFilter(field_name='bedrooms', lookup_expr='exact')
+    project = filters.NumberFilter(field_name='project')
+    #bool
     furnished = filters.BooleanFilter(field_name='furnished')
     has_image = filters.BooleanFilter(method='filter_has_image')
     has_video = filters.BooleanFilter(method='filter_has_video')
-    plan_type = filters.CharFilter(field_name='plan_type')
-    project = filters.NumberFilter(field_name='project')
-    search = filters.CharFilter(method='filter_search')
 
     def filter_has_image(self, queryset, name, value):
         if value:
@@ -40,7 +44,11 @@ class PropertyFilter(filters.FilterSet):
 
     class Meta:
         model = Property
-        fields = ['country', 'city', 'min_price', 'max_price', 'min_area', 'max_area', 'bedrooms', 'plan_type', 'furnished', 'has_image', 'has_video', 'search']
+        fields = [
+            'country', 'city', 'min_price', 'max_price', 'min_area', 'max_area',
+            'bedrooms', 'plan_type', 'furnished', 'has_image', 'has_video', 'search',
+            'category'
+            ]
 
 
 class ProjectFilter(filters.FilterSet):
