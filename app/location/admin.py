@@ -28,59 +28,58 @@ class ProjectAdmin(admin.ModelAdmin):
 class ProjectDetailsAdmin(admin.ModelAdmin):
     list_display = ('project', 'type', 'plot_area', 'total_height', 'total_construction_area', 'levels')
     search_fields = ('project__title', 'type')
-    list_filter = ('project')
+    list_filter = ('project',)
 
 class ProjectImageAdmin(admin.ModelAdmin):
     list_display = ('project', 'image')
     search_fields = ('project__title',)
-    list_filter = ('project')
+    list_filter = ('project',)
 
 class ProjectBuildingPlanAdmin(admin.ModelAdmin):
     list_display = ('project', 'image')
     search_fields = ('project__title',)
-    list_filter = ('project')
+    list_filter = ('project',)
 
 class ProjectVideoAdmin(admin.ModelAdmin):
     list_display = ('project', 'video_file')
     search_fields = ('project__title',)
-    list_filter = ('project')
+    list_filter = ('project',)
 
 class ProjectFacilitiesAdmin(admin.ModelAdmin):
     list_display = ('title', 'count', 'project')
     search_fields = ('title', 'project__title')
-    list_filter = ('project')
+    list_filter = ('project',)
 
 class PropertyAdmin(admin.ModelAdmin):
     list_display = ('plan_type', 'project', 'heating_option', 'price_per_nft', 'area', 'average_rating', 'offer', 'bedrooms', 'effective_price', 'country', 'city', 'cover_img')
     search_fields = ('plan_type', 'project__title')
     list_filter = ('project', 'heating_option')
-    list_filter = ('project')
+    list_filter = ('project',)
 
 class PropertyImageAdmin(admin.ModelAdmin):
     list_display = ('property', 'image')
     search_fields = ('property__project__title',)
-    list_filter = ('property')
+    list_filter = ('property',)
 
 class PropertyBuildingPlanImagesAdmin(admin.ModelAdmin):
     list_display = ('property', 'image')
     search_fields = ('property__project__title',)
-    list_filter = ('property')
+    list_filter = ('property',)
 
 class PropertyVideoAdmin(admin.ModelAdmin):
     list_display = ('property', 'video_file')
     search_fields = ('property__project__title',)
-    list_filter = ('property')
+    list_filter = ('property',)
 
 class PropertyLikeAdmin(admin.ModelAdmin):
     list_display = ('user', 'property', 'created_at')
     search_fields = ('user__username', 'property__project__title')
     list_filter = ('user', 'property')
-    list_filter = ('property')
+    list_filter = ('property',)
 
 class PropertyFacilitiesAdmin(admin.ModelAdmin):
     list_display = ('title', 'count')
     search_fields = ('title', 'properties__project__title')
-    list_filter = ('property')
 
 class BannerAdmin(admin.ModelAdmin):
     list_display = ('title', 'banner_img')
