@@ -15,16 +15,36 @@ class ImageCompressionClass:
     @staticmethod
     def reduce_image_size(image_path, output_size=(800, 600)):
         """
-        Resize an image to the specified size and replace the original image with the resized version.
+        Resize an image to fit within the specified size while maintaining the aspect ratio,
+        and replace the original image with the resized version.
         
         :param image_path: Path to the original image.
-        :param output_size: Tuple specifying the new size (width, height).
+        :param output_size: Tuple specifying the maximum new size (width, height).
         """
         with Image.open(image_path) as img:
             original_size = img.size
-            if original_size[0] < output_size[0] or original_size[1] < output_size[1]:
-                return
-            img = img.resize(output_size, Image.Resampling.LANCZOS)
+            original_width, original_height = original_size
+            max_width, max_height = output_size
+
+            # Calculate the aspect ratio
+            aspect_ratio = original_width / original_height
+
+            # Determine the new dimensions while maintaining aspect ratio
+            if original_width > original_height:  # Landscape
+                new_width = min(original_width, max_width)
+                new_height = int(new_width / aspect_ratio)
+                if new_height > max_height:
+                    new_height = max_height
+                    new_width = int(new_height * aspect_ratio)
+            else:  # Portrait or square
+                new_height = min(original_height, max_height)
+                new_width = int(new_height * aspect_ratio)
+                if new_width > max_width:
+                    new_width = max_width
+                    new_height = int(new_width / aspect_ratio)
+
+            # Resize the image
+            img = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
             img.save(image_path)
 
 def compress_model_images(instance) -> None:
