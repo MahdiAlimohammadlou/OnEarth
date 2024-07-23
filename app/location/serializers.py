@@ -100,8 +100,8 @@ class PropertySerializer(BaseSerializer):
         model = Property
         fields = ['id', 
                     'project',  
-                    'project', 'plan_type', 'heating_option', 'latitude', 'balcony_metrage',
-                    'longitude', 'price_per_nft', 'area', 'average_rating', 'offer',
+                    'project', 'plan_type', 'heating_option', 'balcony_metrage',
+                    'price_per_nft', 'area', 'average_rating', 'offer',
                     'bedrooms', 'living_rooms', 'likes', 'furnished', 'cover_img',
                     'effective_price', 'cover_img_full_url', 'country',
                     'city', 'project_title', 'villa_numbers',

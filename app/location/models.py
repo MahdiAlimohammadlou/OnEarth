@@ -189,8 +189,6 @@ class Property(AbstractBaseModel):
     plan_type = models.CharField(max_length=100)
     heating_option = models.CharField(max_length=50, choices=HEATING_OPTIONS, default='none')
     #Decimals
-    latitude = models.FloatField(null=True, blank=True, default=1.45648)
-    longitude = models.FloatField(null=True, blank=True, default=1.45648)
     price_per_nft = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     area = models.DecimalField(max_digits=10, decimal_places=2)
     balcony_metrage = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
