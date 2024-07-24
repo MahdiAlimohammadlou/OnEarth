@@ -80,7 +80,6 @@ class Project(AbstractBaseModel):
     parking = models.IntegerField(default=0)
     #Image fields
     cover_img = models.ImageField(upload_to = "project_cover_images/", null = True, blank = True)
-    master_plan_img = models.ImageField(upload_to = "master_plan_images/", null = True, blank = True)
     #File fields
     brochure = models.FileField(upload_to = "brochure_pdf/", null = True, blank = True)
     #bollean fields
