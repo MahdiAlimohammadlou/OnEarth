@@ -166,7 +166,6 @@ class ProjectSerializer(BaseSerializer):
     min_price = serializers.SerializerMethodField()
     max_price = serializers.SerializerMethodField()
     cover_img_full_url = serializers.SerializerMethodField()
-    master_plan_img_full_url = serializers.SerializerMethodField()
     brochure_full_url = serializers.SerializerMethodField()
     min_area = serializers.SerializerMethodField()
     max_area = serializers.SerializerMethodField()
@@ -187,7 +186,7 @@ class ProjectSerializer(BaseSerializer):
                     'address', 'slug', 'cheapest_property_type', 'has_promotion',
                     'the_most_expensive_property_type', 'average_rating', 'latitude',
                     'longitude', 'offer', 'property_count', 'brochure_full_url', 
-                    'min_price', 'max_price', 'cover_img_full_url', 'master_plan_img_full_url', 'min_area',
+                    'min_price', 'max_price', 'cover_img_full_url', 'min_area',
                     'max_area', 'min_bedrooms', 'max_bedrooms', 'country', 'floors',
                     'pool', 'gym', 'security', 'land_scape_green_garden', 'metting_room', 'parking',
                     'images', 'videos', 'plans', 'location_featuers', 'facilities', 'project_details'
@@ -219,12 +218,6 @@ class ProjectSerializer(BaseSerializer):
     def get_cover_img_full_url(self, obj):
         if obj.cover_img:
             return get_full_url(obj, 'cover_img', self.url)
-        else:
-            return None
-    
-    def get_master_plan_img_full_url(self, obj):
-        if obj.master_plan_img:
-            return get_full_url(obj, 'master_plan_img', self.url)
         else:
             return None
     
