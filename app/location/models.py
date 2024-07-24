@@ -184,8 +184,8 @@ class Property(AbstractBaseModel):
     ]
 
     CATEGORIES = [
-        ('Apartment', 'apartment'),
-        ('Villa', 'villa'),
+        ('apartment', 'Apartment'),
+        ('villa', 'Villa'),
     ]
 
     #Relations
