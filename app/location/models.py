@@ -26,18 +26,18 @@ class City(AbstractBaseModel):
         properties = Property.objects.filter(project__city=self)
         if properties:
             return min(property.effective_price for property in properties)
-        return None
+        return 0
         
     @property
     def max_price(self):
         properties = Property.objects.filter(project__city=self)
         if properties:
             return max(property.effective_price for property in properties)
-        return None
+        return 0
 
     @property
     def project_count(self):
-        return self.projects.count()  
+        return self.projects.count()
 
     def __str__(self):
         return self.name
@@ -91,14 +91,14 @@ class Project(AbstractBaseModel):
         properties = self.properties.all()
         if properties:
             return min(property.effective_price for property in properties)
-        return None
+        return 0
 
     @property
     def max_price(self):
         properties = self.properties.all()
         if properties:
             return max(property.effective_price for property in properties)
-        return None
+        return 0
     
     @property
     def min_bedrooms(self):

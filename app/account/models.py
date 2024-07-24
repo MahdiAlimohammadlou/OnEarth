@@ -18,8 +18,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_buyer = models.BooleanField(default=False)
     is_agent = models.BooleanField(default=False)
     is_guest = models.BooleanField(default=True)
-    otp_code = models.CharField(blank=True, max_length=6, null=True)
-    otp_created_at = models.DateTimeField(blank=True, null=True)
     is_phone_verified = models.BooleanField(default=False)
 
     objects = UserManager()
@@ -37,12 +35,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def is_staff(self):
         return self.is_admin
-    
-    @property
-    def is_otp_expired(self):
-        if self.otp_created_at is None:
-            return False
-        return timezone.now() > self.otp_created_at + timedelta(minutes=2)
 
     def __str__(self):
         return self.email
