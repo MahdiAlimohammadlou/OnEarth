@@ -103,11 +103,10 @@ class PropertySerializer(BaseSerializer):
                     'project', 'plan_type', 'heating_option', 'balcony_metrage',
                     'price_per_nft', 'area', 'average_rating', 'offer',
                     'bedrooms', 'living_rooms', 'likes', 'furnished', 'cover_img',
-                    'effective_price', 'cover_img_full_url', 'country',
-                    'city', 'project_title', 'villa_numbers',
-                    'is_open_kitchen', 'balcony', 'master', 'bathtub',
-                    'landry', 'guest_toliet', 'wardrop',
-                    'floor_numbers', 'unit_numbers_per_floor',
+                    'effective_price', 'cover_img_full_url', 'country', 'category',
+                    'city', 'project_title', 'is_open_kitchen', 'balcony', 'master',
+                    'bathtub', 'landry', 'guest_toliet', 'wardrop',
+                    'floor_numbers', 'unit_numbers_per_floor', 'villa_numbers', 
                      'shipping_info', 'images', 'videos', 'plans', 'facilities'
                        ]
         
@@ -187,7 +186,7 @@ class ProjectSerializer(BaseSerializer):
                     'neighborhood', 'city',  'title',  'description',
                     'address', 'slug', 'cheapest_property_type', 'has_promotion',
                     'the_most_expensive_property_type', 'average_rating', 'latitude',
-                    'longitude', 'offer', 'property_count', 'brochure_full_url',
+                    'longitude', 'offer', 'property_count', 'brochure_full_url', 
                     'min_price', 'max_price', 'cover_img_full_url', 'master_plan_img_full_url', 'min_area',
                     'max_area', 'min_bedrooms', 'max_bedrooms', 'country', 'floors',
                     'pool', 'gym', 'security', 'land_scape_green_garden', 'metting_room', 'parking',
