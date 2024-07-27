@@ -15,7 +15,7 @@ from .filters import PropertyFilter, ProjectFilter, CityFilter
 from django_filters import rest_framework as filters
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
-from openai import OpenAI
+# from openai import OpenAI
 
 class CountryViewSet(LocationBaseModelViewSet):
     model = Country
@@ -183,59 +183,59 @@ class UserLikesView(APIView):
         property_ids = property_likes.values_list('property_id', flat=True)
         return Response({'property_ids': list(property_ids)})
 
-client = OpenAI()
+# client = OpenAI()
 
-class ChatView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+# class ChatView(APIView):
+#     permission_classes = [permissions.IsAuthenticated]
 
-    def post(self, request, *args, **kwargs):
-        user_message = request.data.get('message')
-        if not user_message:
-            return Response({"error": "Message is required."}, status=status.HTTP_400_BAD_REQUEST)
+#     def post(self, request, *args, **kwargs):
+#         user_message = request.data.get('message')
+#         if not user_message:
+#             return Response({"error": "Message is required."}, status=status.HTTP_400_BAD_REQUEST)
 
-        countries = Country.objects.all()
-        serialized_countries = CountrySerializer(countries, many=True, context={"request":request})
-        countries_data = serialized_countries.data
-        cities = City.objects.all()
-        serialized_cities = CitySerializer(cities, many=True, context={"request":request})
-        cities_data = serialized_cities.data
-        projects = Project.objects.all()
-        serialized_projects = ProjectSerializer(projects, many=True, context={"request":request})
-        projects_data = serialized_projects.data
-        properties = Property.objects.all()
-        serialized_properties = PropertySerializer(properties, many=True, context={"request":request})
-        properties_data = serialized_properties.data
+#         countries = Country.objects.all()
+#         serialized_countries = CountrySerializer(countries, many=True, context={"request":request})
+#         countries_data = serialized_countries.data
+#         cities = City.objects.all()
+#         serialized_cities = CitySerializer(cities, many=True, context={"request":request})
+#         cities_data = serialized_cities.data
+#         projects = Project.objects.all()
+#         serialized_projects = ProjectSerializer(projects, many=True, context={"request":request})
+#         projects_data = serialized_projects.data
+#         properties = Property.objects.all()
+#         serialized_properties = PropertySerializer(properties, many=True, context={"request":request})
+#         properties_data = serialized_properties.data
 
-        prompt = (f"You are a real estate consultant in OnEarth. Provide brief and concise responses by default. If the user asks for more details, provide a more detailed response."
-                  f"Answer based on the following data:\n\n"
-                  f"Countries: {countries_data}\n\n"
-                  f"Cities: {cities_data}\n\n"
-                  f"Projects: {projects_data}\n\n"
-                  f"Properties: {properties_data}\n\n"
-                  f"User question: {user_message}")
+#         prompt = (f"You are a real estate consultant in OnEarth. Provide brief and concise responses by default. If the user asks for more details, provide a more detailed response."
+#                   f"Answer based on the following data:\n\n"
+#                   f"Countries: {countries_data}\n\n"
+#                   f"Cities: {cities_data}\n\n"
+#                   f"Projects: {projects_data}\n\n"
+#                   f"Properties: {properties_data}\n\n"
+#                   f"User question: {user_message}")
 
-        try:
-            completion = client.chat.completions.create(
-              model="gpt-4o",
-              messages=[
-                {"role": "system", "content": "You are a real estate consultant in OnEarth. Provide brief and concise responses by default. If the user asks for more details, provide a more detailed response."},
-                {"role": "user", "content": prompt}
-              ]
-            )
-            ai_response = completion.choices[0].message.content
-            print("api respose: ", ai_response)
+#         try:
+#             completion = client.chat.completions.create(
+#               model="gpt-4o",
+#               messages=[
+#                 {"role": "system", "content": "You are a real estate consultant in OnEarth. Provide brief and concise responses by default. If the user asks for more details, provide a more detailed response."},
+#                 {"role": "user", "content": prompt}
+#               ]
+#             )
+#             ai_response = completion.choices[0].message.content
+#             print("api respose: ", ai_response)
 
-            chat = Chat.objects.create(
-                user=request.user,
-                message=user_message,
-                response=ai_response
-            )
+#             chat = Chat.objects.create(
+#                 user=request.user,
+#                 message=user_message,
+#                 response=ai_response
+#             )
 
-            return Response({"response": ai_response})
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+#             return Response({"response": ai_response})
+#         except Exception as e:
+#             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    def get(self, request, *args, **kwargs):
-        chats = Chat.objects.filter(user=request.user).order_by('created_at')
-        serialized_chats = ChatSerializer(chats, many=True)
-        return Response(serialized_chats.data)
+#     def get(self, request, *args, **kwargs):
+#         chats = Chat.objects.filter(user=request.user).order_by('created_at')
+#         serialized_chats = ChatSerializer(chats, many=True)
+#         return Response(serialized_chats.data)
