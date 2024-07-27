@@ -296,3 +296,11 @@ class LocationFeature(AbstractBaseModel):
 
     def __str__(self):
         return f"{self.feature_name}: {self.feature_time_in_minutes} ({self.type})"
+    
+class Chat(AbstractBaseModel):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.TextField()
+    response = models.TextField()
+
+    def __str__(self):
+        return f'Chat by {self.user.username} at {self.created_at}'

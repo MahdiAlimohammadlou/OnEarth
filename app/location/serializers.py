@@ -4,7 +4,8 @@ from .models import (Country, City, Project, ProjectImage,
                       ProjectVideo, PropertyVideo, PropertyLike,
                       Neighborhood, ProjectBuildingPlan,
                       PropertyBuildingPlanImages, LocationFeature,
-                        ProjectDetails, ProjectFacilities, PropertyFacilities
+                        ProjectDetails, ProjectFacilities, PropertyFacilities,
+                        Chat
                       )
 from core.serializers import BaseSerializer
 from financial.models import ShippingInfo, NFT
@@ -327,3 +328,9 @@ class PropertyLikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = PropertyLike
         fields = ['property']
+
+class ChatSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Chat
+        fields = '__all__'
+        read_only_fields = ('user', 'created_at')

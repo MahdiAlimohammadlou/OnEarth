@@ -4,7 +4,8 @@ from rest_framework.routers import DefaultRouter
 from .views import (CountryViewSet, CityViewSet,
                      ProjectViewSet, PropertyViewSet,
                      BannerListView, PropertyLikeView,
-                     UserLikesView, NeighborhoodViewSet,)
+                     UserLikesView, NeighborhoodViewSet,
+                     ChatView,)
 
 router = DefaultRouter()
 
@@ -23,4 +24,5 @@ urlpatterns = [
     path('banners/', BannerListView.as_view(), name="banners"),
     path('like/', PropertyLikeView.as_view(), name="like"),
     path('user-likes/', UserLikesView.as_view(), name="user-like"),
+    path('chat/', ChatView.as_view(), name='chat'),
 ]
