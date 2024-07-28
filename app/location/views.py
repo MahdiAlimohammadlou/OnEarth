@@ -206,20 +206,19 @@ class ChatView(APIView):
         serialized_properties = PropertySerializer(properties, many=True, context={"request":request})
         properties_data = serialized_properties.data
 
-        prompt = (f"You are a real estate consultant in OnEarth. Provide brief and concise responses by default. If the user asks for more details, provide a more detailed response."
+        system_prompt = (f"You are a real estate consultant in OnEarth. Provide brief and concise responses by default. If the user asks for more details, provide a more detailed response."
                   f"Answer based on the following data:\n\n"
                   f"Countries: {countries_data}\n\n"
                   f"Cities: {cities_data}\n\n"
                   f"Projects: {projects_data}\n\n"
-                  f"Properties: {properties_data}\n\n"
-                  f"User question: {user_message}")
+                  f"Properties: {properties_data}\n\n")
 
         try:
             completion = client.chat.completions.create(
               model="gpt-4o",
               messages=[
-                {"role": "system", "content": "You are a real estate consultant in OnEarth. Provide brief and concise responses by default. If the user asks for more details, provide a more detailed response."},
-                {"role": "user", "content": prompt}
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": f"User question: {user_message}"}
               ]
             )
             ai_response = completion.choices[0].message.content
