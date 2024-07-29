@@ -52,8 +52,8 @@ class AboutUsInfo(AbstractBaseModel):
     address = models.TextField()
 
     def save(self, *args, **kwargs):
-        if AboutUsInfo.objects.exists() and not self.pk:
-            raise ValidationError("Only one AboutUsInfo instance is allowed.")
+        if not self.pk and AboutUsInfo.objects.exists():
+            raise ValidationError('There is can be only one AboutUsInfo instance')
         return super(AboutUsInfo, self).save(*args, **kwargs)
     
     def __str__(self):
