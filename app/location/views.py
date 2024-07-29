@@ -235,6 +235,6 @@ class ChatView(APIView):
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     def get(self, request, *args, **kwargs):
-        chats = Chat.objects.filter(user=request.user).order_by('created_at')
+        chats = Chat.objects.filter(user=request.user).order_by('-created_at')
         serialized_chats = ChatSerializer(chats, many=True)
         return Response(serialized_chats.data)
