@@ -238,3 +238,10 @@ class ChatView(APIView):
         chats = Chat.objects.filter(user=request.user).order_by('-created_at')
         serialized_chats = ChatSerializer(chats, many=True)
         return Response(serialized_chats.data)
+    
+    def delete(self, request, *args, **kwargs):
+        try:
+            Chat.objects.filter(user=request.user).delete()
+            return Response({"success": "Chat history deleted successfully."}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
