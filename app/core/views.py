@@ -5,6 +5,9 @@ from django.db.models import Q
 from rest_framework.views import APIView
 from rest_framework.exceptions import ValidationError, MethodNotAllowed
 
+from .models import AboutUsInfo
+from .serializers import AboutUsInfoSerializer
+
 # Create your views here.
 
 class LocationBaseModelViewSet(viewsets.ModelViewSet):
@@ -72,3 +75,12 @@ class InfoAPIView(APIView):
             return Response(serialized_data, status=status.HTTP_200_OK)
         except self.model_class.DoesNotExist:
             return Response({"detail": f"{self.model_class.__name__} not found."}, status=status.HTTP_404_NOT_FOUND)
+
+class AboutUsInfoView(APIView):
+    def get(self, request):
+        try:
+            about_us_info = AboutUsInfo.objects.get()
+            serializer = AboutUsInfoSerializer(about_us_info)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except AboutUsInfo.DoesNotExist:
+            return Response({"detail": "About Us Info not found"}, status=status.HTTP_404_NOT_FOUND)
