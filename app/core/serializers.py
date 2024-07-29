@@ -1,5 +1,7 @@
 from rest_framework import serializers
+
 from .utils import get_current_url
+from .models import AboutUsInfo
 
 class BaseSerializer(serializers.ModelSerializer):
 
@@ -13,3 +15,12 @@ class BaseSerializer(serializers.ModelSerializer):
 
     class Meta:
         abstract = True
+
+
+class AboutUsInfoSerializer(BaseSerializer):
+
+    class Meta:
+        model = AboutUsInfo
+        fields = [
+         "email", "phone_number", "address",
+        ]
