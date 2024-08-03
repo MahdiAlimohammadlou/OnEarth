@@ -1,14 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from .managers import UserManager
-from django.utils import timezone
-from datetime import timedelta
 from core.models import AbstractBaseModel, AbstractBaseInfoModel
-from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
-from django.conf import settings
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
-
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
@@ -157,7 +152,7 @@ class ReferralCode(AbstractBaseModel):
         return f"{self.code} - {self.agent.email}"
 
 class Device(AbstractBaseModel):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='devices')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='devices')
     device_info = models.CharField(max_length=255, default="Unknown Device")
     refresh_token = models.TextField()
 
