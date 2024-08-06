@@ -206,7 +206,8 @@ class ChatView(APIView):
         serialized_properties = PropertySerializer(properties, many=True, context={"request":request})
         properties_data = serialized_properties.data
 
-        system_prompt = (f"You are a real estate consultant in OnEarth. Provide brief and concise responses by default. If the user asks for more details, provide a more detailed response."
+        system_prompt = (f"You are a real estate consultant in OnEarth. Only provide information and responses related to real estate. If the user asks about anything outside of real estate, remind them that you can only assist with real estate inquiries."
+                  f"Provide brief and concise responses by default. If the user asks for more details, provide a more detailed response."
                   f"Answer based on the following data:\n\n"
                   f"Countries: {countries_data}\n\n"
                   f"Cities: {cities_data}\n\n"
